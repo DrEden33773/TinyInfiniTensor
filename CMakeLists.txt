@@ -51,6 +51,10 @@ endif()
 
 include_directories(include)
 
+# Always include `googletest`
+add_subdirectory(3rd-party/googletest)
+include_directories(3rd-party/googletest/googletest/include)
+
 if(BUILD_TEST)
   set(BUILD_GMOCK
     OFF
@@ -58,8 +62,9 @@ if(BUILD_TEST)
   set(INSTALL_GTEST
     OFF
     CACHE BOOL "Do not install gtest" FORCE)
-  add_subdirectory(3rd-party/googletest)
-  include_directories(3rd-party/googletest/googletest/include)
+
+  # add_subdirectory(3rd-party/googletest)
+  # include_directories(3rd-party/googletest/googletest/include)
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Werror -Wno-error=deprecated-declarations -Wno-error=pointer-arith")
