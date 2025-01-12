@@ -3,12 +3,13 @@
 TYPE ?= Release
 TEST ?= ON
 
+CORE_NUM = $(nproc)
 CMAKE_OPT = -DCMAKE_BUILD_TYPE=$(TYPE)
 CMAKE_OPT += -DBUILD_TEST=$(TEST)
 
 build:
 	mkdir -p build/$(TYPE)
-	cd build/$(TYPE) && cmake $(CMAKE_OPT) ../.. && make -j$(nproc)
+	cd build/$(TYPE) && cmake $(CMAKE_OPT) ../.. && make -j$(CORE_NUM)
 
 clean:
 	rm -rf build
