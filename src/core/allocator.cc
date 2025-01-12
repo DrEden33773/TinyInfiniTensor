@@ -47,7 +47,7 @@ void Allocator::free(size_t addr, size_t size) {
 void *Allocator::getPtr() {
   if (this->ptr == nullptr) {
     this->ptr = runtime->alloc(this->peak);
-    printf("Allocator really alloc: %p %lu bytes\n", this->ptr, peak);
+    printf("Allocator really alloc: %p %zu bytes\n", this->ptr, peak);
   }
   return this->ptr;
 }

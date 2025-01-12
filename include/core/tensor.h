@@ -112,12 +112,12 @@ private:
       } else if constexpr (std::is_floating_point_v<T>) {
         if (std::min(fabs(a[i]), fabs(b[i])) == 0. &&
             fabs(a[i] - b[i]) > relativeError) {
-          printf("Error on %lu: %f %f\n", i, a[i], b[i]);
+          printf("Error on %zu: %f %f\n", i, a[i], b[i]);
           return false;
         } else if (std::min(fabs(a[i]), fabs(b[i])) != 0. &&
                    fabs(a[i] - b[i]) / std::max(fabs(a[i]), fabs(b[i])) >
                        relativeError) {
-          printf("Error on %lu: %f %f\n", i, a[i], b[i]);
+          printf("Error on %zu: %f %f\n", i, a[i], b[i]);
           return false;
         }
       } else {
