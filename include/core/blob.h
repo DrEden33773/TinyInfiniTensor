@@ -7,8 +7,7 @@ namespace infini {
 class RuntimeObj;
 using Runtime = Ref<RuntimeObj>;
 
-class BlobObj
-{
+class BlobObj {
   Runtime runtime;
   void *ptr;
 
@@ -18,8 +17,7 @@ public:
   BlobObj &operator=(BlobObj const &) = delete;
   ~BlobObj() {};
 
-  template <typename T>
-  T getPtr() const { return reinterpret_cast<T>(ptr); }
+  template <typename T> T getPtr() const { return reinterpret_cast<T>(ptr); }
 };
 
 } // namespace infini
