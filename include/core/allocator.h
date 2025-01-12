@@ -9,12 +9,17 @@
 #include <unordered_set>
 
 namespace infini {
+
+using usize = size_t;
+
 class Allocator {
 private:
   Runtime runtime;
 
+  // used memory size
   size_t used;
 
+  // peak of `used` history value
   size_t peak;
 
   size_t alignment;
@@ -22,13 +27,11 @@ private:
   // pointer to the memory actually allocated
   void *ptr;
 
-  // =================================== 作业
-  // ===================================
-  // TODO：可能需要设计一个数据结构来存储free block，以便于管理和合并
-  // HINT: 可以使用一个 map 来存储 free block，key 为 block
-  // 的起始/结尾地址，value 为 block 的大小
-  // =================================== 作业
-  // ===================================
+  /*
+  `key`: start address
+  `value`: size
+   */
+  std::map<usize, usize> free_blocks;
 
 public:
   Allocator(Runtime runtime);

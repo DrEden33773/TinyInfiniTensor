@@ -109,7 +109,7 @@ void GraphObj::shape_infer() {
     IT_ASSERT(ans.has_value());
     auto oldOutputs = op->getOutputs();
     IT_ASSERT(ans.value().size() == oldOutputs.size());
-    // replace the old outputshape and size with new one
+    // replace the old output-shape and size with new one
     for (int i = 0; i < (int)ans.value().size(); ++i) {
       auto newShape = ans.value()[i];
       auto oldShape = oldOutputs[i]->getDims();
@@ -143,7 +143,7 @@ Tensor GraphObj::addTensor(Shape dim, DataType dtype) {
 
 Tensor GraphObj::addTensor(const Tensor &tensor) {
   IT_ASSERT(tensor->getRuntime() == runtime,
-            std::string("Tensor runtime mismatch: cannot add a tenosr in ") +
+            std::string("Tensor runtime mismatch: cannot add a tensor in ") +
                 tensor->getRuntime()->toString() + " to " +
                 runtime->toString());
   tensors.emplace_back(tensor);
