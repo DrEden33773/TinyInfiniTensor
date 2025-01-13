@@ -41,8 +41,8 @@ size_t Allocator::alloc(size_t size) {
   // Find a free block that is large enough
   for (auto it = free_blocks.begin(); it != free_blocks.end(); ++it) {
     if (it->second >= size) {
-      usize offset = it->first;
-      usize remaining = it->second - size;
+      size_t offset = it->first;
+      size_t remaining = it->second - size;
 
       // Remove the block from free_blocks
       free_blocks.erase(it);

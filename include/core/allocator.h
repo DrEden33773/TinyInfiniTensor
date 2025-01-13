@@ -10,8 +10,6 @@
 
 namespace infini {
 
-using usize = size_t;
-
 class Allocator {
 private:
   Runtime runtime;
@@ -31,7 +29,7 @@ private:
   `key`: start address
   `value`: size
    */
-  std::map<usize, usize> free_blocks;
+  std::map<size_t, size_t> free_blocks;
 
 public:
   Allocator(Runtime runtime);
