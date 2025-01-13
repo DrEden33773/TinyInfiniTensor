@@ -9,9 +9,9 @@ class NaiveConcat : public CpuKernelWithoutConfig {
     auto op = as<ConcatObj>(_op);
     auto inputs = op->getInputs(), outputs = op->getOutputs();
     auto dim = op->getDim();
-    auto output = outputs[0];
+    const auto &output = outputs[0];
     std::vector<Shape> iDims;
-    for (auto input : inputs)
+    for (const auto &input : inputs)
       iDims.emplace_back(input->getDims());
     const auto &outDim = output->getDims();
     size_t blockOffsetInner = 1;
@@ -19,9 +19,9 @@ class NaiveConcat : public CpuKernelWithoutConfig {
       blockOffsetInner *= outDim[i];
     size_t blockOffset = outDim[dim] * blockOffsetInner;
     for (size_t i = 0; i < inputs.size(); ++i) {
-      auto input = inputs[i];
+      const auto &input = inputs[i];
       auto dimOffset = 0;
-      auto iDim = iDims[i];
+      const auto &iDim = iDims[i];
       for (size_t j = 0; j < i; ++j)
         dimOffset += iDims[j][dim];
       size_t localBlockOffset = 1;

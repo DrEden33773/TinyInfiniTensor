@@ -7,7 +7,7 @@ inline Shape idx2Pos(const Shape &shape, size_t idx) {
   Shape pos = Shape(shape.size(), 0);
   auto rest = idx, curDimId = shape.size() - 1;
   while (rest > 0) {
-    pos[curDimId] = rest % shape[curDimId];
+    pos[curDimId] = (int)rest % shape[curDimId];
     rest /= shape[curDimId];
     curDimId--;
   }

@@ -1,11 +1,14 @@
 #include "operators/matmul.h"
 
+#include <utility>
+
 namespace infini {
 
 MatmulObj::MatmulObj(GraphObj *graph, Tensor A, Tensor B, Tensor C, bool transA,
                      bool transB)
-    : OperatorObj(OpType::MatMul, TensorVec{A, B}, {C}), transA(transA),
-      transB(transB) {
+    : OperatorObj(OpType::MatMul, TensorVec{std::move(A), std::move(B)},
+                  {std::move(C)}),
+      transA(transA), transB(transB) {
   IT_ASSERT(checkValid(graph));
 }
 

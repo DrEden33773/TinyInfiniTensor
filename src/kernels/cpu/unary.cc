@@ -16,8 +16,7 @@ class NativeUnary : public CpuKernelWithoutConfig {
     auto outDim = op->getOutput()->getDims();
     auto n = op->getOutput()->size();
 
-    T(*_doCompute)
-    (T val);
+    T (*_doCompute)(T val);
     switch (op->getOpType().underlying()) {
     case OpType::Relu:
       _doCompute = reluCompute<T>;

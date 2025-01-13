@@ -1,13 +1,15 @@
 #include "operators/transpose.h"
 
+#include <utility>
+
 namespace infini {
 TransposeObj::TransposeObj(GraphObj *graph, Tensor input, Tensor output,
                            vector<int> permute)
-    : OperatorObj(OpType::Transpose, {input}, {output}) {
+    : OperatorObj(OpType::Transpose, {input}, {std::move(output)}) {
   auto rank = input->getRank();
   if (permute.empty()) {
     for (size_t i = 0; i < rank; ++i) {
-      transposePermute[i] = i;
+      transposePermute[i] = (int)i;
     }
   } else {
     IT_ASSERT(rank == permute.size());

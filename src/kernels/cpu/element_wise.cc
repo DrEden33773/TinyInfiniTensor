@@ -48,8 +48,7 @@ class NativeElementWise : public CpuKernelWithoutConfig {
     Shape strideB = getStride(b);
 
     auto n = op->getOutput()->size();
-    T(*_doCompute)
-    (T val0, T val1);
+    T (*_doCompute)(T val0, T val1);
     switch (op->getOpType().underlying()) {
     case OpType::Add:
       _doCompute = addCompute<T>;

@@ -32,7 +32,7 @@ Shape locate_index(size_t inputN, const Shape &shape) {
   auto i = ans.rbegin();
   auto j = shape.rbegin(), ej = shape.rend();
   while (j != ej) {
-    auto div = std::div(inputN, *j++);
+    auto div = std::div((int)inputN, *j++);
     *i++ = div.rem;
     inputN = div.quot;
   }
@@ -47,13 +47,13 @@ size_t delocate_index(const Shape &shapeIndex, const Shape &shape,
   IT_ASSERT(shape.size() == stride.size());
   for (size_t i = 0; i < shape.size(); ++i) {
     index[i] = shapeIndex[i] % shape[i];
-    ans += index[i] * stride[i];
+    ans += (long)index[i] * stride[i];
   }
   return ans;
 }
 
 std::string device_to_str(Device device) {
-  std::string deviceStr;
+  // std::string deviceStr;
   switch (device) {
   case Device::CPU:
     return "CPU";
