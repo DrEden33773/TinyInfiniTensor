@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <numeric>
 #include <queue>
+#include <vector>
 
 namespace infini {
 
@@ -127,18 +128,16 @@ void GraphObj::dataMalloc() {
   // topological sorting first
   IT_ASSERT(topo_sort() == true);
 
-  // =================================== 作业
-  // ===================================
-  // TODO：利用 allocator 给计算图分配内存
-  // HINT: 获取分配好的内存指针后，可以调用 tensor 的 setDataBlob 函数给 tensor
-  // 绑定内存
-  // =================================== 作业
-  // ===================================
-
+  vector<size_t> tensor_ptr_offsets(tensors.size());
   for (auto &tensor : tensors) {
-    allocator.alloc(tensor->getBytes());
-    auto ptr = allocator.getPtr();
-    tensor->setDataBlob(make_ref<BlobObj>(runtime, ptr));
+    auto offset = allocator.alloc(tensor->getBytes());
+    tensor_ptr_offsets.emplace_back(offset);
+  }
+
+  auto ptr = reinterpret_cast<char *>(allocator.getPtr());
+  for (size_t i = 0; i < tensors.size(); ++i) {
+    auto tensor_addr = reinterpret_cast<void *>(ptr + tensor_ptr_offsets[i]);
+    tensors[i]->setDataBlob(make_ref<BlobObj>(runtime, tensor_addr));
   }
 
   allocator.info();

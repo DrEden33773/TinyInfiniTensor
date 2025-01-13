@@ -1,10 +1,12 @@
 #include "core/operator.h"
+
 #include "core/graph.h"
+#include <utility>
 
 namespace infini {
 
 OperatorObj::OperatorObj(OpType opType, TensorVec inputs, TensorVec outputs)
-    : type(opType), inputs(inputs), outputs(outputs) {}
+    : type(opType), inputs(std::move(inputs)), outputs(std::move(outputs)) {}
 
 void OperatorObj::removePredecessors(const Operator &op) {
   for (auto it = predecessors.begin(); it != predecessors.end();) {
@@ -25,9 +27,9 @@ void OperatorObj::removeSuccessors(const Operator &op) {
 }
 
 void OperatorObj::replaceInput(Tensor t1, Tensor t2) {
-  for (auto itr = inputs.begin(); itr != inputs.end(); ++itr) {
-    if (*itr == t1) {
-      *itr = t2;
+  for (auto &input : inputs) {
+    if (input == t1) {
+      input = t2;
     }
   }
 }

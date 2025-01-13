@@ -1,5 +1,6 @@
 #include "operators/transpose.h"
 
+#include <cstddef>
 #include <utility>
 
 namespace infini {
@@ -7,6 +8,7 @@ TransposeObj::TransposeObj(GraphObj *graph, Tensor input, Tensor output,
                            vector<int> permute)
     : OperatorObj(OpType::Transpose, {input}, {std::move(output)}) {
   auto rank = input->getRank();
+
   if (permute.empty()) {
     for (size_t i = 0; i < rank; ++i) {
       transposePermute[i] = (int)i;
@@ -19,17 +21,18 @@ TransposeObj::TransposeObj(GraphObj *graph, Tensor input, Tensor output,
 }
 
 optional<vector<Shape>> TransposeObj::inferShape(const TensorVec &inputs) {
-  const auto A = inputs[0];
-  auto input_dim = A->getDims();
-  auto output_dim = input_dim;
-  int rank = A->getRank();
+  const auto &input_tensor = inputs[0];
 
-  // =================================== 作业
-  // ===================================
-  // TODO：修改 output_dim，返回正确的 transpose 后的 shape
-  // REF: https://onnx.ai/onnx/operators/onnx__Transpose.html#transpose-21
-  // =================================== 作业
-  // ===================================
+  auto input_shape = input_tensor->getDims();
+  auto output_shape = input_shape;
+
+  auto rank = input_tensor->getRank();
+  if (rank == transposePermute.size()) {
+    for (size_t i = 0; i < rank; ++i) {
+      output_shape[i] = input_shape[transposePermute[i]];
+    }
+    return vector<Shape>{output_shape};
+  }
 
   return std::nullopt;
 }
