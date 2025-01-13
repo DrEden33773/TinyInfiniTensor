@@ -1,7 +1,12 @@
 #include "core/allocator.h"
 #include "fmt/base.h"
 #include "fmt/core.h"
+#include "fmt/format.h"
 #include "utils/exception.h"
+#include "utils/print.hpp"
+#include "gmock/gmock.h"
+#include "gtest/gtest.h"
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -9,8 +14,6 @@
 #include <utility>
 
 namespace infini {
-static constexpr const char *SPLITTER =
-    "----------------------------------------";
 
 Allocator::Allocator(Runtime runtime) : runtime(std::move(runtime)) {
   used = 0;
@@ -33,33 +36,29 @@ size_t Allocator::alloc(size_t size) {
   IT_ASSERT(this->ptr == nullptr);
   size = this->getAlignedSize(size);
 
-  // If no suitable block is found, initialize a new block first
-  if (free_blocks.empty()) {
-    free_blocks[0] = (1ULL << 20);
-  }
-
-  // Find a free block that is large enough
-  for (auto it = free_blocks.begin(); it != free_blocks.end(); ++it) {
-    if (it->second >= size) {
-      size_t offset = it->first;
-      size_t remaining = it->second - size;
-
-      // Remove the block from free_blocks
-      free_blocks.erase(it);
-
-      // If there is remaining space, add it back to free_blocks
-      if (remaining > 0) {
-        free_blocks[offset + size] = remaining;
-      }
-
-      used += size;
-      if (used > peak) {
-        peak = used;
-      }
-
-      return offset;
+  for (auto it = available.begin(); it != available.end(); it++) {
+    if (it->second < size) {
+      continue;
     }
+
+    auto offset = it->first;
+    allocated[offset] = size;
+
+    used += size;
+    peak = std::max(peak, used);
+
+    auto remaining = it->second - size;
+    available.erase(it);
+    if (remaining > 0) {
+      available[offset + size] = remaining;
+    }
+
+    return offset;
   }
+
+  auto msg =
+      fmt::format("[PANIC]: no available memory block of size `{}`", size);
+  testing::Throw(msg);
 
   return 0;
 }
@@ -68,42 +67,57 @@ void Allocator::free(size_t addr, size_t size) {
   IT_ASSERT(this->ptr == nullptr);
   size = getAlignedSize(size);
 
-  auto it = free_blocks.find(addr);
+  auto it = allocated.find(addr);
 
-  if (it == free_blocks.end()) {
-    fmt::println(SPLITTER);
-    fmt::println("[PANIC!]: offset[{}] was not allocated", addr);
-    fmt::println(SPLITTER);
-    exit(-1);
+  if (it == allocated.end()) {
+    auto msg = fmt::format("[PANIC]: offset[{}] was not allocated", addr);
+    testing::Throw(msg);
   }
 
   if (it->second < size) {
-    fmt::println(SPLITTER);
-    fmt::println(
-        "[PANIC!]: offset[{}] allocated size `{}` < expected size `{}` "
-        "to be freed",
+    auto msg = fmt::format(
+        "[PANIC]: offset[{}] allocated size `{}` < expected size `{}` to free",
         addr, it->second, size);
-    fmt::println(SPLITTER);
-    exit(-1);
+    testing::Throw(msg);
   }
 
   if (it->second != size) {
-    fmt::println(SPLITTER);
-    fmt::println("[WARNING?]: offset[{}] allocated size `{}` > expected size "
-                 "`{}` to be freed",
-                 addr, it->second, size);
-    fmt::println(SPLITTER);
+    eprintln(
+        "[WARN]: offset[{}] allocated size `{}` > expected size `{}` to free",
+        addr, it->second, size);
   }
 
   // free the block
   used -= size;
-  free_blocks.erase(it);
+  allocated.erase(it);
+  available[addr] = size;
+
+  // merge adjacent free block on the right
+  auto right_it = available.find(addr + size);
+  if (right_it != available.end()) {
+    size += right_it->second;
+    available.erase(right_it);
+    available[addr] = size;
+  }
+
+  // then merge adjacent free block on the left
+  auto left_it = available.lower_bound(addr); // the first <=, instead of <
+  if (left_it != available.begin()) {
+    auto prev_it = std::prev(left_it); // that's why we need the `orev` iterator
+    if (prev_it->first + prev_it->second == addr) {
+      addr = prev_it->first;
+      size += prev_it->second;
+      available.erase(prev_it);
+      available[addr] = size;
+    }
+  }
 }
 
 void *Allocator::getPtr() {
   if (this->ptr == nullptr) {
     this->ptr = runtime->alloc(this->peak);
-    fmt::println("Allocator really alloc: {} {} bytes", this->ptr, this->peak);
+    eprintln("Allocator really alloc `{}` with `{}` bytes", this->ptr,
+             this->peak);
   }
   return this->ptr;
 }
@@ -113,6 +127,6 @@ size_t Allocator::getAlignedSize(size_t size) {
 }
 
 void Allocator::info() {
-  fmt::print("Used memory: {}, peak memory: {}\n", this->used, this->peak);
+  eprintln("Used memory: {}, peak memory: {}", this->used, this->peak);
 }
 } // namespace infini

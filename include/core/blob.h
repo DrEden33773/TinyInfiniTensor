@@ -1,4 +1,6 @@
 #pragma once
+#include <utility>
+
 #include "core/common.h"
 #include "core/ref.h"
 
@@ -12,7 +14,7 @@ class BlobObj {
   void *ptr;
 
 public:
-  BlobObj(Runtime runtime, void *ptr) : runtime(runtime), ptr(ptr) {}
+  BlobObj(Runtime runtime, void *ptr) : runtime(std::move(runtime)), ptr(ptr) {}
   BlobObj(BlobObj &other) = delete;
   BlobObj &operator=(BlobObj const &) = delete;
   ~BlobObj() {};

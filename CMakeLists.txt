@@ -54,6 +54,7 @@ include_directories(include)
 # Always include `googletest`
 add_subdirectory(3rd-party/googletest)
 include_directories(3rd-party/googletest/googletest/include)
+include_directories(3rd-party/googletest/googlemock/include)
 
 # Dependency: fmtlib/fmt
 add_subdirectory(3rd-party/fmt)

@@ -1,6 +1,7 @@
 #include "core/graph.h"
 #include "core/kernel.h"
 #include "core/runtime.h"
+#include "fmt/color.h"
 #include "operators/unary.h"
 
 #include "test.h"

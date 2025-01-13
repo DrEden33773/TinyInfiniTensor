@@ -12,6 +12,9 @@ namespace infini {
 
 class Allocator {
 private:
+  // Default Value = 16MB
+  static constexpr size_t MAX_SIZE = 16ULL << 20;
+
   Runtime runtime;
 
   // used memory size
@@ -29,7 +32,13 @@ private:
   `key`: start address
   `value`: size
    */
-  std::map<size_t, size_t> free_blocks;
+  std::map<size_t, size_t> allocated;
+
+  /*
+  `key`: start address
+  `value`: size
+   */
+  std::map<size_t, size_t> available{{0, MAX_SIZE}};
 
 public:
   Allocator(Runtime runtime);
