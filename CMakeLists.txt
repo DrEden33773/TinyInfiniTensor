@@ -55,6 +55,10 @@ include_directories(include)
 add_subdirectory(3rd-party/googletest)
 include_directories(3rd-party/googletest/googletest/include)
 
+# Dependency: fmtlib/fmt
+add_subdirectory(3rd-party/fmt)
+include_directories(3rd-party/fmt/include)
+
 if(BUILD_TEST)
   set(BUILD_GMOCK
     OFF
