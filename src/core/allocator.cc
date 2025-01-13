@@ -1,9 +1,15 @@
 #include "core/allocator.h"
 #include "utils/exception.h"
 #include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <string>
 #include <utility>
 
 namespace infini {
+static constexpr const char *SPLITTER =
+    "----------------------------------------";
+
 Allocator::Allocator(Runtime runtime) : runtime(std::move(runtime)) {
   used = 0;
   peak = 0;
@@ -24,6 +30,11 @@ Allocator::~Allocator() {
 size_t Allocator::alloc(size_t size) {
   IT_ASSERT(this->ptr == nullptr);
   size = this->getAlignedSize(size);
+
+  // If no suitable block is found, initialize a new block first
+  if (free_blocks.empty()) {
+    free_blocks[0] = (1ULL << 20);
+  }
 
   // Find a free block that is large enough
   for (auto it = free_blocks.begin(); it != free_blocks.end(); ++it) {
@@ -48,11 +59,6 @@ size_t Allocator::alloc(size_t size) {
     }
   }
 
-  // If no suitable block is found, initialize a new block
-  if (free_blocks.empty()) {
-    free_blocks[0] = (1ULL << 30);
-  }
-
   return 0;
 }
 
@@ -64,7 +70,10 @@ void Allocator::free(size_t addr, size_t size) {
 
   if (it == free_blocks.end()) {
     std::string msg = "offset[" + std::to_string(addr) + "]: Not allocated";
-    throw Exception(msg);
+    std::cout << SPLITTER << '\n';
+    std::cout << "[Error]: " << msg << '\n';
+    std::cout << SPLITTER << '\n';
+    exit(-1);
   }
 
   if (it->second < size) {
@@ -72,14 +81,19 @@ void Allocator::free(size_t addr, size_t size) {
                       std::to_string(it->second) +
                       "` is less than expected free size `" +
                       std::to_string(size) + "`";
-    throw Exception(msg);
+    std::cout << SPLITTER << '\n';
+    std::cout << "[Error]: " << msg << '\n';
+    std::cout << SPLITTER << '\n';
+    exit(-1);
   }
 
   if (it->second != size) {
+    std::cout << SPLITTER << '\n';
     std::cout << "[Warning]: offset[" << addr << "] allocated size `"
               << it->second << "` is larger than expected free size `" << size
               << "`\n";
     std::cout << "\tDefault solution => free the whole block\n";
+    std::cout << SPLITTER << '\n';
   }
 
   // free the block

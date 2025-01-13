@@ -16,11 +16,16 @@ TEST(Allocator, testAlloc) {
   Allocator allocator = Allocator(runtime);
   // allocate a->b->c
   size_t offsetA = allocator.alloc(a->getBytes());
+  allocator.info();
   size_t offsetB = allocator.alloc(b->getBytes());
+  allocator.info();
   size_t offsetC = allocator.alloc(c->getBytes());
+  allocator.info();
   // free b, then allocate d
   allocator.free(offsetB, b->getBytes());
+  allocator.info();
   size_t offsetD = allocator.alloc(d->getBytes());
+  allocator.info();
   // expected to be a->d->c
   EXPECT_EQ(offsetB, offsetD);
   ASSERT_FALSE(offsetA == 0 && offsetB == 0 && offsetC == 0 && offsetD == 0);

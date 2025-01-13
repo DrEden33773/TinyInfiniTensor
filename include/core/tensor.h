@@ -33,15 +33,15 @@ private:
 public:
   TensorObj(Shape shape, DataType dtype, Runtime runtime);
   virtual ~TensorObj() {}
-  string toString() const override;
+  [[nodiscard]] string toString() const override;
 
-  size_t size() const { return _size; }
-  size_t getBytes() const { return _size * dtype.getSize(); }
+  [[nodiscard]] size_t size() const { return _size; }
+  [[nodiscard]] size_t getBytes() const { return _size * dtype.getSize(); }
 
-  Shape getDims() const { return shape; }
+  [[nodiscard]] Shape getDims() const { return shape; }
   void setShape(Shape shape_);
-  size_t getRank() const { return shape.size(); }
-  UidBaseType getFuid() const { return fuid; }
+  [[nodiscard]] size_t getRank() const { return shape.size(); }
+  [[nodiscard]] UidBaseType getFuid() const { return fuid; }
 
   void
   setData(std::function<void(void *, size_t, DataType)> const &generator) const;
@@ -106,19 +106,17 @@ private:
 
   template <typename T>
   bool equalDataImpl(const T *a, const T *b, size_t size,
-                     double relativeError = 1e-6) const {
+                     double rel = 1e-6) const {
     for (size_t i = 0; i < size; ++i) {
       if constexpr (std::is_integral_v<T>) {
         if (a[i] != b[i])
           return false;
       } else if constexpr (std::is_floating_point_v<T>) {
-        if (std::min(fabs(a[i]), fabs(b[i])) == 0. &&
-            fabs(a[i] - b[i]) > relativeError) {
+        if (std::min(fabs(a[i]), fabs(b[i])) == 0. && fabs(a[i] - b[i]) > rel) {
           printf("Error on %zu: %f %f\n", i, a[i], b[i]);
           return false;
         } else if (std::min(fabs(a[i]), fabs(b[i])) != 0. &&
-                   fabs(a[i] - b[i]) / std::max(fabs(a[i]), fabs(b[i])) >
-                       relativeError) {
+                   fabs(a[i] - b[i]) / std::max(fabs(a[i]), fabs(b[i])) > rel) {
           printf("Error on %zu: %f %f\n", i, a[i], b[i]);
           return false;
         }

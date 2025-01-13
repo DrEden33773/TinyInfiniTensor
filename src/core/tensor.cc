@@ -4,11 +4,12 @@
 #include "core/runtime.h"
 #include <cstring>
 #include <numeric>
+#include <utility>
 
 namespace infini {
 
 TensorObj::TensorObj(Shape shape_, DataType dtype, Runtime runtime)
-    : dim(shape_.size()), dtype(dtype), runtime(runtime),
+    : dim((int)shape_.size()), dtype(dtype), runtime(std::move(runtime)),
       shape(std::move(shape_)),
       _size(std::accumulate(shape.begin(), shape.end(), 1, std::multiplies{})) {
 }
@@ -25,6 +26,7 @@ string TensorObj::toString() const {
                ", dtype " + dtype.toString() + ", " + runtime->toString() +
                ", " + ss.str() + "\n";
   vector<UidBaseType> targetGuids;
+  targetGuids.reserve(targets.size());
   for (const auto &op : targets)
     targetGuids.emplace_back(op.lock()->getGuid());
   if (auto o = source.lock())
@@ -36,7 +38,7 @@ string TensorObj::toString() const {
 }
 
 void TensorObj::setShape(Shape shape_) {
-  shape = shape_;
+  shape = std::move(shape_);
   size_t size = std::accumulate(shape.begin(), shape.end(), 1,
                                 [](auto acc, auto x) { return acc * x; });
   _size = size;
@@ -49,7 +51,7 @@ void TensorObj::printData() const {
 
 #define TRY_PRINT(N)                                                           \
   if (dtype == DataType(N))                                                    \
-    std::cout << dataToString<DT<N>::t>() << std::endl;
+    std::cout << dataToString<DT<N>::t>() << '\n';
 
   TRY_PRINT(0)           // fmt: new line
   else TRY_PRINT(1)      //
