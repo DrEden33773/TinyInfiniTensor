@@ -31,13 +31,12 @@ ClipObj::ClipObj(GraphObj *graph, Tensor input, Tensor output,
 }
 
 optional<vector<Shape>> ClipObj::inferShape(const TensorVec &inputs) {
-  // =================================== 作业
-  // ===================================
-  // TODO：返回经过 clip 操作后的 shape
-  // REF: https://onnx.ai/onnx/operators/onnx__Clip.html#clip-13
-  // =================================== 作业
-  // ===================================
-  return std::nullopt;
+  vector<Shape> shapes(inputs.size());
+  for (size_t i = 0; i < inputs.size(); ++i) {
+    shapes[i] = inputs[i]->getDims();
+  }
+
+  return shapes;
 }
 
 std::string ClipObj::toString() const {
