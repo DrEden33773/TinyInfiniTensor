@@ -41,6 +41,10 @@ find_package(
 # OpenMP
 find_package(OpenMP)
 
+# fmt
+find_package(fmt)
+add_subdirectory(fmt)
+
 if(OpenMP_C_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 endif()
@@ -56,9 +60,8 @@ add_subdirectory(3rd-party/googletest)
 include_directories(3rd-party/googletest/googletest/include)
 
 # Dependency: fmtlib/fmt
-add_subdirectory(3rd-party/fmt)
-include_directories(3rd-party/fmt/include)
-
+# add_subdirectory(3rd-party/fmt)
+# include_directories(3rd-party/fmt/include)
 if(BUILD_TEST)
   set(BUILD_GMOCK
     OFF
@@ -85,6 +88,9 @@ endif()
 
 # Libraries
 add_library(InfiniTensor SHARED ${SRC})
+
+# fmt library
+target_link_libraries(InfiniTensor fmt::fmt)
 
 function(build_test files)
   # Non-recursive glob for skip failed tests

@@ -1,4 +1,6 @@
 #include "core/allocator.h"
+#include "fmt/base.h"
+#include "fmt/core.h"
 #include "utils/exception.h"
 #include <cstdio>
 #include <cstdlib>
@@ -69,31 +71,28 @@ void Allocator::free(size_t addr, size_t size) {
   auto it = free_blocks.find(addr);
 
   if (it == free_blocks.end()) {
-    std::string msg = "offset[" + std::to_string(addr) + "]: Not allocated";
-    std::cout << SPLITTER << '\n';
-    std::cout << "[Error]: " << msg << '\n';
-    std::cout << SPLITTER << '\n';
+    fmt::println(SPLITTER);
+    fmt::println("[PANIC!]: offset[{}] was not allocated", addr);
+    fmt::println(SPLITTER);
     exit(-1);
   }
 
   if (it->second < size) {
-    std::string msg = "offset[" + std::to_string(addr) + "] allocated size `" +
-                      std::to_string(it->second) +
-                      "` is less than expected free size `" +
-                      std::to_string(size) + "`";
-    std::cout << SPLITTER << '\n';
-    std::cout << "[Error]: " << msg << '\n';
-    std::cout << SPLITTER << '\n';
+    fmt::println(SPLITTER);
+    fmt::println(
+        "[PANIC!]: offset[{}] allocated size `{}` < expected size `{}` "
+        "to be freed",
+        addr, it->second, size);
+    fmt::println(SPLITTER);
     exit(-1);
   }
 
   if (it->second != size) {
-    std::cout << SPLITTER << '\n';
-    std::cout << "[Warning]: offset[" << addr << "] allocated size `"
-              << it->second << "` is larger than expected free size `" << size
-              << "`\n";
-    std::cout << "\tDefault solution => free the whole block\n";
-    std::cout << SPLITTER << '\n';
+    fmt::println(SPLITTER);
+    fmt::println("[WARNING?]: offset[{}] allocated size `{}` > expected size "
+                 "`{}` to be freed",
+                 addr, it->second, size);
+    fmt::println(SPLITTER);
   }
 
   // free the block
@@ -104,8 +103,7 @@ void Allocator::free(size_t addr, size_t size) {
 void *Allocator::getPtr() {
   if (this->ptr == nullptr) {
     this->ptr = runtime->alloc(this->peak);
-    std::cout << "Allocator really alloc: " << this->ptr << " " << this->peak
-              << " bytes\n";
+    fmt::println("Allocator really alloc: {} {} bytes", this->ptr, this->peak);
   }
   return this->ptr;
 }
@@ -115,7 +113,6 @@ size_t Allocator::getAlignedSize(size_t size) {
 }
 
 void Allocator::info() {
-  std::cout << "Used memory: " << this->used << ", peak memory: " << this->peak
-            << '\n';
+  fmt::print("Used memory: {}, peak memory: {}\n", this->used, this->peak);
 }
 } // namespace infini
