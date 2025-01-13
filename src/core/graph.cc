@@ -1,5 +1,6 @@
 #include "core/graph.h"
 #include <algorithm>
+#include <cstddef>
 #include <numeric>
 #include <queue>
 
@@ -161,35 +162,35 @@ TensorVec GraphObj::addTensor(const TensorVec &tensors) {
 // "inputs" or "outputs" of operators must be in "tensors"
 // "predecessors" and "successors" of an operator of "ops" must be in "ops".
 bool GraphObj::checkValid() const {
-  for (auto tensor : tensors) {
+  for (const auto &tensor : tensors) {
     IT_ASSERT(
         !(tensor->getTargets().size() == 0 && nullptr == tensor->getSource()));
-    for (auto op : tensor->getTargets()) {
+    for (const auto &op : tensor->getTargets()) {
       IT_ASSERT(std::find(ops.begin(), ops.end(), op) != ops.end());
     }
     auto op = tensor->getSource();
     IT_ASSERT(!(op && std::find(ops.begin(), ops.end(), op) == ops.end()));
   }
-  for (auto op : ops) {
-    for (auto tensor : op->getInputs()) {
+  for (const auto &op : ops) {
+    for (const auto &tensor : op->getInputs()) {
       IT_ASSERT(std::find(tensors.begin(), tensors.end(), tensor) !=
                 tensors.end());
     }
-    for (auto tensor : op->getOutputs()) {
+    for (const auto &tensor : op->getOutputs()) {
       IT_ASSERT(std::find(tensors.begin(), tensors.end(), tensor) !=
                 tensors.end());
     }
-    for (auto pre : op->getPredecessors()) {
+    for (const auto &pre : op->getPredecessors()) {
       IT_ASSERT(std::find(ops.begin(), ops.end(), pre) != ops.end());
     }
-    for (auto suc : op->getSuccessors()) {
+    for (const auto &suc : op->getSuccessors()) {
       IT_ASSERT(std::find(ops.begin(), ops.end(), suc) != ops.end());
     }
   }
   std::set<UidBaseType> s;
   // check whether two tensors with the same FUID exist
-  for (auto tensor : tensors) {
-    int cnt = s.count(tensor->getFuid());
+  for (const auto &tensor : tensors) {
+    size_t cnt = s.count(tensor->getFuid());
     IT_ASSERT(cnt == 0, std::to_string(tensor->getFuid()));
     s.insert(tensor->getFuid());
   }

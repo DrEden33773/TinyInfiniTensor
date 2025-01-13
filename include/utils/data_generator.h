@@ -55,6 +55,6 @@ private:
   }
   void fill(float *data, size_t size) override { fill<float>(data, size); }
 };
-typedef ValGenerator<1> OneGenerator;
-typedef ValGenerator<0> ZeroGenerator;
+using OneGenerator = ValGenerator<1>;
+using ZeroGenerator = ValGenerator<0>;
 } // namespace infini

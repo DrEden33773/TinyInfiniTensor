@@ -32,7 +32,8 @@ public:
   class prefix##Obj : public ElementWiseObj {                                  \
   public:                                                                      \
     prefix##Obj(GraphObj *graph, Tensor input0, Tensor input1, Tensor output)  \
-        : ElementWiseObj(type, graph, input0, input1, output) {}               \
+        : ElementWiseObj(type, graph, std::move(input0), std::move(input1),    \
+                         std::move(output)) {}                                 \
     OP_CLONE(prefix##Obj);                                                     \
   };
 

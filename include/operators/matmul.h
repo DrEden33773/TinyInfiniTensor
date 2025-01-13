@@ -43,16 +43,16 @@ public:
   std::string toString() const override;
   optional<vector<Shape>> inferShape(const TensorVec &inputs) override;
 
-  int numInputs() const override { return inputs.size(); }
-  int numOutputs() const override { return 1; }
+  [[nodiscard]] int numInputs() const override { return (int)inputs.size(); }
+  [[nodiscard]] int numOutputs() const override { return 1; }
 
-  bool getTransA() const { return transA; }
-  bool getTransB() const { return transB; }
+  [[nodiscard]] bool getTransA() const { return transA; }
+  [[nodiscard]] bool getTransB() const { return transB; }
   void setTransA(bool transA) { this->transA = transA; }
   void setTransB(bool transB) { this->transB = transB; }
-  int getM() const { return m; }
-  int getN() const { return n; }
-  int getK() const { return k; }
+  [[nodiscard]] int getM() const { return m; }
+  [[nodiscard]] int getN() const { return n; }
+  [[nodiscard]] int getK() const { return k; }
 };
 
 } // namespace infini

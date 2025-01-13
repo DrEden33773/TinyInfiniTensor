@@ -26,7 +26,7 @@ struct OpType {
 
   constexpr OpType(decltype(type) t) : type(t) {}
   constexpr explicit OpType(underlying_t val) : type((decltype(type))val) {}
-  constexpr underlying_t underlying() const { return type; }
+  [[nodiscard]] constexpr underlying_t underlying() const { return type; }
 
   bool operator==(OpType others) const { return type == others.type; }
   bool operator!=(OpType others) const { return type != others.type; }

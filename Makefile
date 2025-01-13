@@ -3,7 +3,7 @@
 TYPE ?= Release
 TEST ?= ON
 
-CORE_NUM = $(nproc)
+CORE_NUM = $(shell nproc)
 CMAKE_OPT = -DCMAKE_BUILD_TYPE=$(TYPE)
 CMAKE_OPT += -DBUILD_TEST=$(TEST)
 

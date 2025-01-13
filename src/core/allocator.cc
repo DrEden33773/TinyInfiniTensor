@@ -4,7 +4,7 @@
 #include <utility>
 
 namespace infini {
-Allocator::Allocator(Runtime runtime) : runtime(runtime) {
+Allocator::Allocator(Runtime runtime) : runtime(std::move(runtime)) {
   used = 0;
   peak = 0;
   ptr = nullptr;
@@ -60,16 +60,9 @@ void Allocator::free(size_t addr, size_t size) {
   IT_ASSERT(this->ptr == nullptr);
   size = getAlignedSize(size);
 
-  // =================================== 作业
-  // ===================================
-  // TODO: 设计一个算法来回收内存
-  // =================================== 作业
-  // ===================================
-
   auto it = free_blocks.find(addr);
 
   if (it == free_blocks.end()) {
-    // cannot find the block, double free error
     std::string msg = "offset[" + std::to_string(addr) + "]: Not allocated";
     throw Exception(msg);
   }
@@ -83,11 +76,10 @@ void Allocator::free(size_t addr, size_t size) {
   }
 
   if (it->second != size) {
-    printf(
-        "[Warning]: offset[%zu] allocated size `%zu` is larger than expected "
-        "free size `%zu`\n",
-        addr, it->second, size);
-    printf("\t>>> Default solution = free the whole block\n");
+    std::cout << "[Warning]: offset[" << addr << "] allocated size `"
+              << it->second << "` is larger than expected free size `" << size
+              << "`\n";
+    std::cout << "\tDefault solution => free the whole block\n";
   }
 
   // free the block
@@ -98,7 +90,8 @@ void Allocator::free(size_t addr, size_t size) {
 void *Allocator::getPtr() {
   if (this->ptr == nullptr) {
     this->ptr = runtime->alloc(this->peak);
-    printf("Allocator really alloc: %p %zu bytes\n", this->ptr, peak);
+    std::cout << "Allocator really alloc: " << this->ptr << " " << this->peak
+              << " bytes\n";
   }
   return this->ptr;
 }
@@ -109,6 +102,6 @@ size_t Allocator::getAlignedSize(size_t size) {
 
 void Allocator::info() {
   std::cout << "Used memory: " << this->used << ", peak memory: " << this->peak
-            << std::endl;
+            << '\n';
 }
 } // namespace infini

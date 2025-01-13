@@ -25,8 +25,8 @@ public:
   optional<vector<Shape>> inferShape(const TensorVec &inputs) override;
 
   std::string toString() const override;
-  int numInputs() const override { return inputs.size(); }
-  int numOutputs() const override { return 1; }
-  int getDim() const { return dim; }
+  [[nodiscard]] int numInputs() const override { return inputs.size(); }
+  [[nodiscard]] int numOutputs() const override { return 1; }
+  [[nodiscard]] int getDim() const { return dim; }
 };
 } // namespace infini

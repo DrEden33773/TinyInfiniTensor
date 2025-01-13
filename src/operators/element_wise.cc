@@ -1,15 +1,19 @@
 #include "operators/element_wise.h"
+
 #include "utils/operator_utils.h"
+#include <utility>
 
 namespace infini {
 ElementWiseObj::ElementWiseObj(OpType type, GraphObj *graph, Tensor input0,
                                Tensor input1, Tensor output)
-    : OperatorObj(type, {input0, input1}, {output}) {
+    : OperatorObj(type, {std::move(input0), std::move(input1)},
+                  {std::move(output)}) {
   IT_ASSERT(checkValid(graph));
 }
 
 optional<vector<Shape>> ElementWiseObj::inferShape(const TensorVec &inputs) {
-  const auto A = inputs[0], B = inputs[1];
+  const auto &A = inputs[0];
+  const auto &B = inputs[1];
   auto res = infer_broadcast(A->getDims(), B->getDims());
   return {{res}};
 }

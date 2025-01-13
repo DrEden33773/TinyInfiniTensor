@@ -22,7 +22,7 @@ public:
   virtual optional<vector<Shape>> inferShape(const TensorVec &inputs) = 0;
   virtual vector<DataType> inferDataType(const TensorVec &inputs) const;
   /**
-   * @brief Constructs outputs (if requried) and check whether the operator is
+   * @brief Constructs outputs (if required) and check whether the operator is
    * valid.
    *
    * @param graph If graph is not nullptr, outputs should be created in this
@@ -31,25 +31,29 @@ public:
   bool checkValid(GraphObj *graph);
 
 public: // getter and setter
-  const TensorVec &getInputs() const { return inputs; }
-  const TensorVec &getOutputs() const { return outputs; }
-  Tensor getInputs(size_t i) const { return inputs.at(i); }
-  Tensor getOutput() const {
+  [[nodiscard]] const TensorVec &getInputs() const { return inputs; }
+  [[nodiscard]] const TensorVec &getOutputs() const { return outputs; }
+  [[nodiscard]] Tensor getInputs(size_t i) const { return inputs.at(i); }
+  [[nodiscard]] Tensor getOutput() const {
     IT_ASSERT(outputs.size() == 1, "Unimplemented");
     return outputs[0];
   }
-  Tensor getOutput(size_t i) const {
+  [[nodiscard]] Tensor getOutput(size_t i) const {
     IT_ASSERT(i < outputs.size(), "Index exceeded");
     return outputs.at(i);
   }
-  OpVec getPredecessors() const { return wrefs_to_refs(predecessors); }
-  OpVec getSuccessors() const { return wrefs_to_refs(successors); }
-  OpType getOpType() const { return type; }
+  [[nodiscard]] OpVec getPredecessors() const {
+    return wrefs_to_refs(predecessors);
+  }
+  [[nodiscard]] OpVec getSuccessors() const {
+    return wrefs_to_refs(successors);
+  }
+  [[nodiscard]] OpType getOpType() const { return type; }
   // HACK: set correct data type
-  DataType getDType() const { return getInputs(0)->getDType(); }
-  DataType getOutDType() const { return getOutput()->getDType(); }
-  virtual int numInputs() const = 0;
-  virtual int numOutputs() const = 0;
+  [[nodiscard]] DataType getDType() const { return getInputs(0)->getDType(); }
+  [[nodiscard]] DataType getOutDType() const { return getOutput()->getDType(); }
+  [[nodiscard]] virtual int numInputs() const = 0;
+  [[nodiscard]] virtual int numOutputs() const = 0;
 
   /**
    * @brief Clone this operator and replace its inputs and outputs.
@@ -58,12 +62,12 @@ public: // getter and setter
    * @param newOutputs
    * @return Operator
    */
-  virtual Operator clone(const TensorVec &newInputs,
-                         const TensorVec &newOutputs) const = 0;
+  [[nodiscard]] virtual Operator clone(const TensorVec &newInputs,
+                                       const TensorVec &newOutputs) const = 0;
 
 protected:
   optional<vector<Shape>> inferShape();
-  vector<DataType> inferDataType() const;
+  [[nodiscard]] vector<DataType> inferDataType() const;
 
 private:
   void addPredecessors(const Operator &op) { predecessors.emplace_back(op); }

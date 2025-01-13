@@ -1,5 +1,7 @@
 #pragma once
 #include "core/operator.h"
+#include <algorithm>
+#include <cstdint>
 
 namespace infini {
 /**
@@ -19,9 +21,9 @@ public:
   UnaryObj(OpType type, GraphObj *graph, Tensor input, Tensor output);
   optional<vector<Shape>> inferShape(const TensorVec &inputs) override;
 
-  std::string toString() const override;
-  int numInputs() const override { return 1; }
-  int numOutputs() const override { return 1; }
+  [[nodiscard]] std::string toString() const override;
+  [[nodiscard]] int numInputs() const override { return 1; }
+  [[nodiscard]] int numOutputs() const override { return 1; }
 };
 
 class ClipObj : public OperatorObj {
@@ -31,17 +33,17 @@ public:
   OP_CLONE(ClipObj);
   optional<vector<Shape>> inferShape(const TensorVec &inputs) override;
 
-  std::string toString() const override;
-  std::optional<float> getMin() const { return minValue; };
-  std::optional<float> getMax() const { return maxValue; };
-  int numInputs() const override { return 1; }
-  int numOutputs() const override { return 1; }
+  [[nodiscard]] std::string toString() const override;
+  [[nodiscard]] std::optional<float> getMin() const { return minValue; };
+  [[nodiscard]] std::optional<float> getMax() const { return maxValue; };
+  [[nodiscard]] int numInputs() const override { return 1; }
+  [[nodiscard]] int numOutputs() const override { return 1; }
 
 private:
   std::optional<float> minValue, maxValue;
 };
 
-enum class CastType {
+enum class CastType : uint8_t {
   Float2Float16 = 0,
   Float2Int64,
   Float2Int32,
@@ -74,13 +76,14 @@ public:
   CastObj(GraphObj *graph, Tensor input, Tensor output, CastType type);
   OP_CLONE(CastObj);
   optional<vector<Shape>> inferShape(const TensorVec &inputs) override;
-  vector<DataType> inferDataType(const TensorVec &inputs) const override;
+  [[nodiscard]] vector<DataType>
+  inferDataType(const TensorVec &inputs) const override;
 
-  std::string toString() const override;
-  CastType getType() const { return castType; }
-  DataType getOutputDataType() const;
-  int numInputs() const override { return 1; }
-  int numOutputs() const override { return 1; }
+  [[nodiscard]] std::string toString() const override;
+  [[nodiscard]] CastType getType() const { return castType; }
+  [[nodiscard]] DataType getOutputDataType() const;
+  [[nodiscard]] int numInputs() const override { return 1; }
+  [[nodiscard]] int numOutputs() const override { return 1; }
 
 private:
   CastType castType;
@@ -90,7 +93,7 @@ private:
   class prefix##Obj : public UnaryObj {                                        \
   public:                                                                      \
     prefix##Obj(GraphObj *graph, Tensor input, Tensor output)                  \
-        : UnaryObj(type, graph, input, output) {}                              \
+        : UnaryObj(type, graph, std::move(input), std::move(output)) {}        \
     OP_CLONE(prefix##Obj);                                                     \
   };
 

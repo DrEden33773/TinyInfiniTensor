@@ -21,10 +21,10 @@ public:
   OP_CLONE(TransposeObj);
   optional<vector<Shape>> inferShape(const TensorVec &inputs) override;
 
-  std::string toString() const override;
-  int numInputs() const override { return 1; }
-  int numOutputs() const override { return 1; }
-  std::vector<int> getPermute() const { return transposePermute; }
+  [[nodiscard]] std::string toString() const override;
+  [[nodiscard]] int numInputs() const override { return 1; }
+  [[nodiscard]] int numOutputs() const override { return 1; }
+  [[nodiscard]] std::vector<int> getPermute() const { return transposePermute; }
 
 private:
   vector<int> transposePermute;

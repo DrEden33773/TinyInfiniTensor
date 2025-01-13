@@ -1,13 +1,15 @@
 #include "operators/unary.h"
 
+#include <utility>
+
 namespace infini {
 UnaryObj::UnaryObj(OpType type, GraphObj *graph, Tensor input, Tensor output)
-    : OperatorObj(type, {input}, {output}) {
+    : OperatorObj(type, {std::move(input)}, {std::move(output)}) {
   IT_ASSERT(checkValid(graph));
 }
 
 optional<vector<Shape>> UnaryObj::inferShape(const TensorVec &inputs) {
-  const auto A = inputs[0];
+  const auto &A = inputs[0];
   return {{A->getDims()}};
 }
 
@@ -23,8 +25,8 @@ std::string UnaryObj::toString() const {
 
 ClipObj::ClipObj(GraphObj *graph, Tensor input, Tensor output,
                  std::optional<float> min, std::optional<float> max)
-    : OperatorObj(OpType::Clip, {input}, {output}), minValue(min),
-      maxValue(max) {
+    : OperatorObj(OpType::Clip, {std::move(input)}, {std::move(output)}),
+      minValue(min), maxValue(max) {
   IT_ASSERT(checkValid(graph));
 }
 
@@ -49,7 +51,8 @@ std::string ClipObj::toString() const {
 }
 
 CastObj::CastObj(GraphObj *graph, Tensor input, Tensor output, CastType type)
-    : OperatorObj(OpType::Cast, {input}, {output}), castType(type) {
+    : OperatorObj(OpType::Cast, {std::move(input)}, {std::move(output)}),
+      castType(type) {
   IT_ASSERT(checkValid(graph));
 }
 
@@ -115,7 +118,7 @@ DataType CastObj::getOutputDataType() const {
   case CastType::Uint82Int32:
     return DataType::Int32;
   case CastType::Uint82Int64:
-    return DataType::Int64;
+    // return DataType::Int64;
   case CastType::Int322Int64:
     return DataType::Int64;
   case CastType::Int642Int32:
@@ -127,7 +130,7 @@ DataType CastObj::getOutputDataType() const {
   case CastType::Uint322Int64:
     return DataType::Int64;
   case CastType::Float162Float:
-    return DataType::Float32;
+    // return DataType::Float32;
   case CastType::BFloat162Float:
     return DataType::Float32;
   case CastType::Float2BFloat16:

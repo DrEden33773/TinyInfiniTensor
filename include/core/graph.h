@@ -3,7 +3,6 @@
 #include "core/operator.h"
 #include "core/tensor.h"
 #include <algorithm>
-#include <cstdint>
 
 namespace infini {
 
@@ -15,29 +14,29 @@ protected:
   Allocator allocator;
 
 public:
-  explicit GraphObj(Runtime runtime)
+  explicit GraphObj(const Runtime &runtime)
       : runtime(runtime), allocator(runtime), sorted(false) {};
-  string toString() const override;
-  Runtime getRuntime() const { return runtime; }
+  [[nodiscard]] string toString() const override;
+  [[nodiscard]] Runtime getRuntime() const { return runtime; }
 
   Tensor addTensor(Shape dim, DataType dtype = DataType::Float32);
   Tensor addTensor(const Tensor &tensor);
   TensorVec addTensor(const TensorVec &tensors);
-  void removeOperator(Operator op) {
+  void removeOperator(const Operator &op) {
     auto it = std::find(ops.begin(), ops.end(), op);
     if (it != ops.end())
       ops.erase(it);
   }
 
-  void removeTensor(Tensor tensor) {
+  void removeTensor(const Tensor &tensor) {
     auto it = std::find(tensors.begin(), tensors.end(), tensor);
     if (it != tensors.end())
       tensors.erase(it);
   }
 
-  const TensorVec &getTensors() const { return tensors; }
-  const OpVec &getOperators() const { return ops; }
-  Tensor getTensor(int) const;
+  [[nodiscard]] const TensorVec &getTensors() const { return tensors; }
+  [[nodiscard]] const OpVec &getOperators() const { return ops; }
+  [[nodiscard]] Tensor getTensor(int) const;
 
   /**
    * @brief Sort the nodes in topological order.
@@ -76,7 +75,7 @@ public:
   /**
    * @brief Gets input tensors of this graph.
    */
-  inline TensorVec getInputs() const {
+  [[nodiscard]] inline TensorVec getInputs() const {
     TensorVec ret;
     for (const auto &t : tensors)
       if (!t->getSource())
@@ -87,7 +86,7 @@ public:
   /**
    * @brief Gets output tensors of this graph.
    */
-  inline TensorVec getOutputs() const {
+  [[nodiscard]] inline TensorVec getOutputs() const {
     TensorVec ret;
     for (const auto &t : tensors)
       if (t->getTargets().empty())

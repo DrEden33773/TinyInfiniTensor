@@ -16,7 +16,9 @@ public:
     return *this;
   }
 
-  const char *what() const noexcept override { return info.c_str(); }
+  [[nodiscard]] const char *what() const noexcept override {
+    return info.c_str();
+  }
 };
 
 } // namespace infini

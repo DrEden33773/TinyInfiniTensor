@@ -4,6 +4,7 @@
 #include "core/object.h"
 #include "core/runtime.h"
 #include <cmath>
+#include <cstddef>
 #include <cstring>
 #include <fstream>
 
@@ -48,7 +49,8 @@ public:
   void setDataBlob(const Blob &blob);
 
   void printData() const;
-  bool equalData(const Tensor &rhs, double relativeError = 1e-6) const;
+  [[nodiscard]] bool equalData(const Tensor &rhs,
+                               double relativeError = 1e-6) const;
 
   template <typename T> bool equalData(const vector<T> &dataVector) {
     IT_ASSERT(size() == dataVector.size());
@@ -63,23 +65,23 @@ public:
     return data->getPtr<T>();
   }
 
-  DataType getDType() const { return dtype; }
-  Runtime getRuntime() const { return runtime; }
+  [[nodiscard]] DataType getDType() const { return dtype; }
+  [[nodiscard]] Runtime getRuntime() const { return runtime; }
 
-  OpVec getTargets() const { return wrefs_to_refs(targets); }
-  Operator getSource() const { return source.lock(); }
+  [[nodiscard]] OpVec getTargets() const { return wrefs_to_refs(targets); }
+  [[nodiscard]] Operator getSource() const { return source.lock(); }
 
 private:
   template <class T> string dataToString() const {
     std::stringstream builder;
-    builder << "Tensor: " << guid << std::endl;
+    builder << "Tensor: " << guid << '\n';
 
     auto numDims = shape.size();
     auto dimSzVec = vector<int>(numDims, 1);
     auto ptr = data->getPtr<T *>();
     dimSzVec[numDims - 1] = shape[numDims - 1];
 
-    for (int i = numDims - 1; i != 0; --i)
+    for (size_t i = numDims - 1; i != 0; --i)
       dimSzVec[i - 1] = dimSzVec[i] * shape[i - 1];
 
     for (size_t i = 0, iEnd = size(); i < iEnd; ++i) {
@@ -97,7 +99,7 @@ private:
 
       auto column = (size_t)dimSzVec[numDims - 1];
       if (i % column == column - 1)
-        builder << std::endl;
+        builder << '\n';
     }
     return builder.str();
   }

@@ -4,6 +4,8 @@
 #include "core/ref.h"
 
 namespace infini {
+using u8 = uint8_t;
+
 class TensorObj;
 class OperatorObj;
 class GraphObj;
@@ -19,7 +21,7 @@ using Blob = Ref<BlobObj>;
 using TensorVec = vector<Tensor>;
 using OpVec = vector<Operator>;
 
-enum class Device { CPU = 1 };
+enum class Device : u8 { CPU = 1 };
 
 class RuntimeObj : public std::enable_shared_from_this<RuntimeObj> {
 protected:

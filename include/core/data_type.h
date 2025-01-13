@@ -64,10 +64,10 @@ public:
   template <typename T> static int get() {
     IT_TODO_HALT_MSG("Unsupported data type");
   }
-  size_t getSize() const { return sizePerElement[index]; }
-  string toString() const { return string(names[index]); }
-  int cpuTypeInt() const { return cpuType[index]; }
-  int getIndex() const { return index; }
+  [[nodiscard]] size_t getSize() const { return sizePerElement[index]; }
+  [[nodiscard]] string toString() const { return string(names[index]); }
+  [[nodiscard]] int cpuTypeInt() const { return cpuType[index]; }
+  [[nodiscard]] int getIndex() const { return index; }
 };
 
 // Method definitions are out of the declaration due to GCC bug:

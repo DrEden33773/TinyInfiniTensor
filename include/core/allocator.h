@@ -57,7 +57,7 @@ public:
   void info();
 
 private:
-  // function: memory alignment, rouned up
+  // function: memory alignment, rounded up
   // return: size of the aligned memory block
   size_t getAlignedSize(size_t size);
 };

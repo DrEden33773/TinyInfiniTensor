@@ -41,7 +41,8 @@ private:
 
 public:
   Fuid() : Uid(generateFuid()) {}
-  Fuid(const Fuid &fuid) : Uid(fuid) {}
+  // Fuid(const Fuid &fuid) : Uid(fuid) {}
+  Fuid(const Fuid &fuid) = default;
 };
 
 class Object {
@@ -50,9 +51,9 @@ protected:
 
 public:
   virtual ~Object() {};
-  virtual string toString() const = 0;
-  void print() { std::cout << toString() << std::endl; }
-  UidBaseType getGuid() const { return guid; }
+  [[nodiscard]] virtual string toString() const = 0;
+  void print() { std::cout << toString() << '\n'; }
+  [[nodiscard]] UidBaseType getGuid() const { return guid; }
 };
 
 inline std::ostream &operator<<(std::ostream &os, const Object &obj) {
