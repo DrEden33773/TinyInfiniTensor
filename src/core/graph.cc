@@ -137,15 +137,15 @@ void GraphObj::optimize() {
           auto next_out = next_op->getOutput(0);
           auto next_next_op = next_out->getTargets()[0];
 
-          // 根据测试样例, 要把 next_next_op 的输入替换为 curr_op 的输入
+          // 根据测试样例, 直接替换 next_next_op.input 为 input
           op_map[next_next_op->getGuid()]->replaceInput(next_out, in);
 
-          // targets 也要替换
+          // 直接替换 targets
           auto in_i = tensor_i_map[in->getGuid()];
           tensors[in_i]->removeTarget(op);
           tensors[in_i]->addTarget(next_next_op);
 
-          // 更新 pred
+          // 直接修正 pred
           op_map[next_next_op->getGuid()]->removePredecessors(next_op);
 
           // 更新计划
@@ -193,7 +193,7 @@ void GraphObj::optimize() {
         // 根据测试样例, 还要把对应的 A / B 直接替换为 curr_in
         op_map[mul_op->getGuid()]->replaceInput(op->getOutput(0), in);
 
-        // targets 也要替换
+        // 直接替换 targets
         auto in_i = tensor_i_map[in->getGuid()];
         tensors[in_i]->removeTarget(op);
         tensors[in_i]->addTarget(next_op);
