@@ -31,6 +31,10 @@ public:
   explicit RuntimeObj(Device device) : device(device) {}
   RuntimeObj(RuntimeObj &other) = delete;
   RuntimeObj &operator=(RuntimeObj const &) = delete;
+
+  RuntimeObj(RuntimeObj &&other) = default;
+  RuntimeObj &operator=(RuntimeObj &&) = default;
+
   virtual ~RuntimeObj() {}
 
   virtual void run(const Graph &graph) const = 0;

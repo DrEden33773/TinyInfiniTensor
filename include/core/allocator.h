@@ -42,6 +42,8 @@ private:
 
 public:
   Allocator(Runtime runtime);
+  Allocator(Allocator &&alloc) noexcept = default;
+  Allocator &operator=(Allocator &&alloc) noexcept = default;
 
   virtual ~Allocator();
 
