@@ -25,10 +25,10 @@ std::string ElementWiseObj::toString() const {
   std::ostringstream os;
   os << type.toString() << "[" << getGuid() << "]";
   os << "(";
-  os << vecToString(inputs[0]->getDims()) << ",";
-  os << vecToString(inputs[1]->getDims()) << ",";
-  os << "input0=" << inputs[0]->getGuid() << ",";
-  os << "input1=" << inputs[1]->getGuid() << ",";
+  os << vecToString(inputs[0]->getDims()) << ", ";
+  os << vecToString(inputs[1]->getDims()) << ", ";
+  os << "input0=" << inputs[0]->getGuid() << ", ";
+  os << "input1=" << inputs[1]->getGuid() << ", ";
   os << "output=" << outputs[0]->getGuid() << ")";
   return os.str();
 }

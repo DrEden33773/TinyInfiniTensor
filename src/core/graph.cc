@@ -1,8 +1,15 @@
 #include "core/graph.h"
+#include "core/object.h"
+#include "operators/matmul.h"
+#include "operators/transpose.h"
+#include "utils/print.hpp"
 #include <algorithm>
 #include <cstddef>
+#include <map>
 #include <numeric>
 #include <queue>
+#include <string>
+#include <string_view>
 #include <vector>
 
 namespace infini {
@@ -32,22 +39,25 @@ void GraphObj::addOperatorAndConnect(const Operator &op) {
 
 string GraphObj::toString() const {
   std::ostringstream oss;
-  oss << "Graph Tensors:\n";
+  oss << "┌─[Graph Tensors]" << "\n";
   for (const auto &tensor : tensors)
-    oss << tensor << "\n";
+    oss << "│" << (&tensor == &tensors.back() ? "   └" : "   ├") << "───"
+        << tensor << "\n";
 
-  oss << "Graph operators:\n";
+  oss << "└─[Graph operators]" << "\n";
   for (const auto &op : ops) {
     vector<UidBaseType> preds, succs;
     for (auto &o : op->getPredecessors())
       preds.emplace_back(o->getGuid());
     for (auto &o : op->getSuccessors())
       succs.emplace_back(o->getGuid());
-    oss << "OP " << op->getGuid();
-    oss << ", pred " << vecToString(preds);
-    oss << ", succ " << vecToString(succs);
-    oss << ", " << op << "\n";
+    oss << (&op == &ops.back() ? "    └" : "    ├") << "───";
+    oss << "{OP: " << op->getGuid();
+    oss << ", pred: " << vecToString(preds);
+    oss << ", succ: " << vecToString(succs);
+    oss << ", " << op << "}\n";
   }
+
   return oss.str();
 }
 
@@ -84,16 +94,97 @@ bool GraphObj::topo_sort() {
 }
 
 void GraphObj::optimize() {
-  // =================================== 作业
-  // ===================================
-  // TODO: 设计一个算法来实现指定的图优化规则
-  // 图优化规则如下：
-  // 1. 去除冗余的算子（例如，两个相邻的算子都是 transpose
-  // 算子，且做的是相反的操作，可以将其全部删除）
-  // 2.
-  // 合并算子（例如，矩阵乘算子中含有属性transA、transB，如果其输入存在transpose，且对最后两个维度做交换，就可以将transpose融入到矩阵乘算子的属性中去）
-  // =================================== 作业
-  // ===================================
+  // 转成 map, 方便一些
+  std::map<decltype(ops[0]->getGuid()), Operator> op_map;
+  for (auto &op : ops) {
+    op_map[op->getGuid()] = op;
+  }
+
+  // 1. 试图合并 transpose
+  auto it = op_map.begin();
+  while (it != op_map.end()) {
+    auto guid = it->first;
+    auto op = it->second;
+    it++; // 提前移动, 防止 erase 之后迭代器失效
+
+    if (op->getOpType() == OpType::Transpose) {
+      auto in = op->getInputs(0);
+      auto out = op->getOutput(0);
+      if (out->getTargets().empty())
+        continue;
+      auto next_op = out->getTargets()[0];
+
+      if (next_op->getOpType() == OpType::Transpose) {
+        // 先转换为 TransposeObj *
+        auto tr_op = dynamic_cast<TransposeObj *>(op.get());
+        auto next_tr_op = dynamic_cast<TransposeObj *>(next_op.get());
+        if (!tr_op || !next_tr_op)
+          continue;
+
+        // 只有两次的 permute 相同, 才能合并
+        if (tr_op->getPermute() == next_tr_op->getPermute()) {
+          auto next_out = next_op->getOutput(0);
+          if (next_out->getTargets().empty())
+            continue;
+          auto next_next_op = next_out->getTargets()[0];
+
+          // 根据测试样例, 要把 next_next_op 的输入替换为 curr_op 的输入
+          op_map[next_next_op->getGuid()]->replaceInput(next_out, in);
+
+          op_map.erase(guid);                // curr_op
+          op_map.erase(next_op->getGuid());  // next_op
+          op_map.erase(out->getGuid());      // curr_out
+          op_map.erase(next_out->getGuid()); // next_out
+        }
+      }
+    }
+  }
+
+  // 2. 试图将 transpose 融入到 matmul 中
+  it = op_map.begin();
+  while (it != op_map.end()) {
+    auto guid = it->first;
+    auto op = it->second;
+    it++; // 提前移动, 防止 erase 之后迭代器失效
+
+    if (op->getOpType() == OpType::Transpose) {
+      auto in = op->getInputs(0);
+      auto out = op->getOutput(0);
+      if (out->getTargets().empty())
+        continue;
+      auto next_op = out->getTargets()[0];
+
+      // 解析为 TransposeObj *
+      auto curr_tr_op = dynamic_cast<TransposeObj *>(op.get());
+      if (!curr_tr_op)
+        continue;
+
+      auto curr_perm = curr_tr_op->getPermute();
+      auto is_last_two_dims_swapped =
+          curr_perm.size() >= 2 &&
+          curr_perm[curr_perm.size() - 1] == (int)(curr_perm.size() - 2) &&
+          curr_perm[curr_perm.size() - 2] == (int)(curr_perm.size() - 1);
+
+      if (next_op->getOpType() == OpType::MatMul && is_last_two_dims_swapped) {
+        // 先转换为 MatmulObj *
+        auto mul_op = dynamic_cast<MatmulObj *>(next_op.get());
+        if (!mul_op)
+          continue;
+
+        // 区分 curr_out 是 A 还是 B, 分情况讨论
+        if (out->getGuid() == mul_op->getInputs(0)->getGuid()) {
+          mul_op->setTransA(!mul_op->getTransA());
+        } else {
+          mul_op->setTransB(!mul_op->getTransB());
+        }
+        // 根据测试样例, 还要把对应的 A / B 直接替换为 curr_in
+        op_map[mul_op->getGuid()]->replaceInput(op->getOutput(0), in);
+
+        op_map.erase(guid);           // curr_op
+        op_map.erase(out->getGuid()); // curr_out
+      }
+    }
+  }
 }
 
 Tensor GraphObj::getTensor(int fuid) const {

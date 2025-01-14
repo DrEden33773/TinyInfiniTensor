@@ -20,20 +20,20 @@ string TensorObj::toString() const {
   if (data != nullptr)
     ss << data->getPtr<void *>();
   else
-    ss << "nullptr data";
-  string ret = "Tensor " + std::to_string(guid) + ", Fuid " +
-               std::to_string(fuid) + ", shape " + vecToString(shape) +
-               ", dtype " + dtype.toString() + ", " + runtime->toString() +
-               ", " + ss.str() + "\n";
+    ss << "✘";
+  string ret =
+      "{tensor: " + std::to_string(guid) + ", fuid: " + std::to_string(fuid) +
+      ", shape: " + vecToString(shape) + ", dtype: " + dtype.toString() +
+      ", runtime: " + runtime->toString() + ", data: " + ss.str();
   vector<UidBaseType> targetGuids;
   targetGuids.reserve(targets.size());
   for (const auto &op : targets)
     targetGuids.emplace_back(op.lock()->getGuid());
   if (auto o = source.lock())
-    ret += ", source " + std::to_string(o->getGuid());
+    ret += ", source: " + std::to_string(o->getGuid());
   else
-    ret += ", source None";
-  ret += ", targets " + vecToString(targetGuids);
+    ret += ", source: ✘";
+  ret += ", targets: " + vecToString(targetGuids) + "}";
   return ret;
 }
 

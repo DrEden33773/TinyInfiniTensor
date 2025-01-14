@@ -7,7 +7,7 @@ namespace infini {
 using UidBaseType = int;
 
 class Uid {
-private:
+protected:
   UidBaseType uid;
 
 public:
@@ -15,6 +15,13 @@ public:
   Uid &operator=(const Uid &rhs) = delete;
 
   operator UidBaseType() const { return uid; }
+
+  friend bool operator==(const Uid &lhs, const Uid &rhs) {
+    return lhs.uid == rhs.uid;
+  }
+  friend bool operator<(const Uid &lhs, const Uid &rhs) {
+    return lhs.uid < rhs.uid;
+  }
 };
 
 class Guid : public Uid {
@@ -27,6 +34,13 @@ private:
 public:
   Guid() : Uid(generateGuid()) {}
   Guid(const Guid &rhs) : Uid(generateGuid()) {}
+
+  friend bool operator==(const Guid &lhs, const Guid &rhs) {
+    return lhs.uid == rhs.uid;
+  }
+  friend bool operator<(const Guid &lhs, const Guid &rhs) {
+    return lhs.uid < rhs.uid;
+  }
 };
 
 /**
@@ -43,6 +57,13 @@ public:
   Fuid() : Uid(generateFuid()) {}
   // Fuid(const Fuid &fuid) : Uid(fuid) {}
   Fuid(const Fuid &fuid) = default;
+
+  friend bool operator==(const Fuid &lhs, const Fuid &rhs) {
+    return lhs.uid == rhs.uid;
+  }
+  friend bool operator<(const Fuid &lhs, const Fuid &rhs) {
+    return lhs.uid < rhs.uid;
+  }
 };
 
 class Object {

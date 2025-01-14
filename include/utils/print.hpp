@@ -2,6 +2,7 @@
 
 #include "fmt/core.h"
 #include <iterator>
+#include <string>
 #include <vector>
 
 namespace infini {

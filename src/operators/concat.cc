@@ -53,11 +53,11 @@ std::string ConcatObj::toString() const {
   os << "Concat[" << getGuid() << "]";
   os << "(";
   for (const auto &input : inputs)
-    os << vecToString(input->getDims()) << ",";
-  os << "dim=" << dim << ",";
+    os << vecToString(input->getDims()) << ", ";
+  os << "dim=" << dim << ", ";
   os << "input=";
   for (const auto &input : inputs)
-    os << input->getGuid() << ",";
+    os << input->getGuid() << ", ";
   os << "output=" << outputs[0]->getGuid() << ")";
   return os.str();
 }

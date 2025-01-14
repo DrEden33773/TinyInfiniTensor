@@ -17,7 +17,7 @@ void NativeCpuRuntimeObj::run(const Graph &graph) const {
   }
 }
 
-string NativeCpuRuntimeObj::toString() const { return "CPU Runtime"; }
+string NativeCpuRuntimeObj::toString() const { return "CPU"; }
 
 void NativeCpuRuntimeObj::dealloc(void *ptr) { return free(ptr); }
 

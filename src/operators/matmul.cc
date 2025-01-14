@@ -17,9 +17,9 @@ MatmulObj::MatmulObj(GraphObj *graph, Tensor A, Tensor B, Tensor C, bool transA,
 string MatmulObj::toString() const {
   std::ostringstream os;
   os << "Matmul([" << (transA ? "A^T" : "A") << "," << (transB ? "B^T" : "B]")
-     << ",A=" << inputs[0]->getGuid() << ",B=" << inputs[1]->getGuid()
-     << ",C=" << outputs[0]->getGuid() << ",mnk=[" << m << "," << n << "," << k
-     << "])";
+     << ", A=" << inputs[0]->getGuid() << ", B=" << inputs[1]->getGuid()
+     << ", C=" << outputs[0]->getGuid() << ", mnk=[" << m << "," << n << ","
+     << k << "])";
   return os.str();
 }
 

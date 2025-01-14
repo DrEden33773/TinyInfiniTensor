@@ -72,7 +72,7 @@ public:
   [[nodiscard]] Operator getSource() const { return source.lock(); }
 
 private:
-  template <class T> string dataToString() const {
+  template <class T> [[nodiscard]] string dataToString() const {
     std::stringstream builder;
     builder << "Tensor: " << guid << '\n';
 
