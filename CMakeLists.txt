@@ -46,12 +46,8 @@ find_package(
 find_package(OpenMP)
 
 # Dependency: fmtlib/fmt
-include(FetchContent)
-FetchContent_Declare(
-  fmt
-  GIT_REPOSITORY https://github.com/fmtlib/fmt
-  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rd-party/fmt)
-FetchContent_MakeAvailable(fmt)
+add_subdirectory(3rd-party/fmt)
+include_directories(3rd-party/fmt/include)
 
 if(OpenMP_C_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
