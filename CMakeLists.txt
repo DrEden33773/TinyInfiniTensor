@@ -30,7 +30,7 @@ else()
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_EXTENSIONS OFF) # -std=gnu++11 when on, -std=c++11 when off
+set(CMAKE_CXX_EXTENSIONS ON) # -std=gnu++11 when on, -std=c++11 when off
 add_compile_options(-Wno-error=unused-variable)
 
 find_package(
@@ -55,10 +55,6 @@ include_directories(include)
 add_subdirectory(3rd-party/googletest)
 include_directories(3rd-party/googletest/googletest/include)
 include_directories(3rd-party/googletest/googlemock/include)
-
-# Dependency: fmtlib/fmt
-add_subdirectory(3rd-party/fmt)
-include_directories(3rd-party/fmt/include)
 
 if(BUILD_TEST)
   set(BUILD_GMOCK
@@ -87,8 +83,14 @@ endif()
 # Libraries
 add_library(InfiniTensor SHARED ${SRC})
 
-# fmt library (header-only)
-target_link_libraries(InfiniTensor PRIVATE fmt::fmt-header-only)
+# Dependency: fmtlib/fmt
+include(FetchContent)
+FetchContent_Declare(
+  fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt
+  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rd-party/fmt)
+FetchContent_MakeAvailable(fmt)
+target_link_libraries(InfiniTensor fmt::fmt)
 
 function(build_test files)
   # Non-recursive glob for skip failed tests
