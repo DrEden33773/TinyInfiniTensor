@@ -1,8 +1,6 @@
 #pragma once
 #include "utils/exception.h"
 #include <cassert>
-#include <functional>
-#include <iostream>
 #include <list>
 #include <map>
 #include <optional>
@@ -11,8 +9,6 @@
 #include <string>
 #include <tuple>
 #include <unordered_map>
-#include <unordered_set>
-#include <variant>
 #include <vector>
 
 namespace infini {
@@ -50,7 +46,7 @@ using std::vector;
 #define IT_ASSERT_TODO(condition) _IT_ASSERT_2(condition, "Unimplemented")
 #define IT_TODO_SKIP() puts("Unimplemented " __FILE__ ":" __LINE__)
 
-// std::to_underlying is avaiable since C++23
+// std::to_underlying is available since C++23
 template <typename T> auto enum_to_underlying(T e) {
   return static_cast<std::underlying_type_t<T>>(e);
 }

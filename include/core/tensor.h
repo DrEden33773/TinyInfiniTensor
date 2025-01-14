@@ -6,7 +6,6 @@
 #include <cmath>
 #include <cstddef>
 #include <cstring>
-#include <fstream>
 
 namespace infini {
 class GraphObj;

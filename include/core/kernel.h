@@ -1,9 +1,7 @@
 #pragma once
 #include "core/common.h"
 #include "core/operator.h"
-#include "core/tensor.h"
 #include "utils/operator_utils.h"
-#include <functional>
 
 namespace infini {
 

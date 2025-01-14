@@ -5,12 +5,8 @@
 #include "core/runtime.h"
 #include "operators/matmul.h"
 #include "operators/transpose.h"
-#include "utils/print.hpp"
 #include <algorithm>
 #include <cstddef>
-#include <map>
-#include <numeric>
-#include <queue>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>

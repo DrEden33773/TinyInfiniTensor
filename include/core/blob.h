@@ -1,7 +1,6 @@
 #pragma once
 #include <utility>
 
-#include "core/common.h"
 #include "core/ref.h"
 
 namespace infini {

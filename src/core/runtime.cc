@@ -1,10 +1,7 @@
 #include "core/runtime.h"
-#include "core/blob.h"
 #include "core/graph.h"
 #include "core/kernel.h"
-#include <chrono>
 #include <cstring>
-#include <memory>
 
 namespace infini {
 void NativeCpuRuntimeObj::run(const Graph &graph) const {

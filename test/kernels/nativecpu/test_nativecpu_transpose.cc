@@ -1,12 +1,10 @@
 #include "core/graph.h"
-#include "core/kernel.h"
 #include "core/runtime.h"
 #include "fmt/base.h"
 #include "operators/transpose.h"
 
 #include "test.h"
 #include "utils/print.hpp"
-#include <iostream>
 
 namespace infini {
 

@@ -1,6 +1,5 @@
 #pragma once
 #include "core/operator.h"
-#include <algorithm>
 #include <cstdint>
 
 namespace infini {

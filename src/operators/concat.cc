@@ -2,7 +2,6 @@
 
 #include "utils/operator_utils.h"
 #include <algorithm>
-#include <cstddef>
 #include <optional>
 #include <utility>
 

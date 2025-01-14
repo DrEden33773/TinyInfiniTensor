@@ -16,7 +16,7 @@ public:
    * @param output The output tensor.
    * @param permute The permutation of the dimensions.
    */
-  TransposeObj(GraphObj *graph, Tensor input, Tensor output,
+  TransposeObj(GraphObj *graph, const Tensor &input, Tensor output,
                vector<int> permute);
   OP_CLONE(TransposeObj);
   optional<vector<Shape>> inferShape(const TensorVec &inputs) override;

@@ -33,8 +33,10 @@ class NativeElementWise : public CpuKernelWithoutConfig {
     auto rank = op->getOutput()->getRank();
     Shape a(rank, 1);
     Shape b(rank, 1);
-    std::copy(shapeA.begin(), shapeA.end(), a.begin() + (rank - shapeA.size()));
-    std::copy(shapeB.begin(), shapeB.end(), b.begin() + (rank - shapeB.size()));
+    std::copy(shapeA.begin(), shapeA.end(),
+              a.begin() + (long)(rank - shapeA.size()));
+    std::copy(shapeB.begin(), shapeB.end(),
+              b.begin() + (long)(rank - shapeB.size()));
     auto getStride = [&](const Shape &shape) {
       int p = 1;
       Shape stride(rank);

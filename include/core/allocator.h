@@ -1,12 +1,10 @@
 #pragma once
 #include "core/runtime.h"
-#include "core/tensor.h"
 #ifdef BUILD_TEST
 #include "gtest/gtest.h"
 #endif
 #include <cstddef>
 #include <map>
-#include <unordered_set>
 
 namespace infini {
 

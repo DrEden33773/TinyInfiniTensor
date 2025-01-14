@@ -2,15 +2,11 @@
 #include "fmt/base.h"
 #include "fmt/core.h"
 #include "fmt/format.h"
-#include "utils/exception.h"
 #include "utils/print.hpp"
 #include "gmock/gmock.h"
-#include "gtest/gtest.h"
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
-#include <iostream>
-#include <string>
 #include <utility>
 
 #define MERGE_ADJ_LEFT_FREE_BLOCK

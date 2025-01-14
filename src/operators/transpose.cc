@@ -4,7 +4,7 @@
 #include <utility>
 
 namespace infini {
-TransposeObj::TransposeObj(GraphObj *graph, Tensor input, Tensor output,
+TransposeObj::TransposeObj(GraphObj *graph, const Tensor &input, Tensor output,
                            vector<int> permute)
     : OperatorObj(OpType::Transpose, {input}, {std::move(output)}) {
   auto rank = input->getRank();

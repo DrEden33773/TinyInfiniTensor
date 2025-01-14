@@ -1,5 +1,4 @@
 #include "core/graph.h"
-#include "core/kernel.h"
 #include "core/runtime.h"
 #include "operators/matmul.h"
 #include "operators/transpose.h"

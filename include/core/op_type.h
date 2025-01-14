@@ -3,12 +3,10 @@
 #define OP_TYPE_H
 
 #include <cstdint>
-#include <string>
-#include <unordered_set>
 
 namespace infini {
 struct OpType {
-  using underlying_t = uint16_t;
+  using underlying_t = uint8_t;
   enum : underlying_t {
     Unknown,
     Add,
