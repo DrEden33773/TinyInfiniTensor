@@ -94,6 +94,8 @@ endif()
 
 # Libraries
 add_library(InfiniTensor SHARED ${SRC})
+
+# fmtlib/fmt's library
 target_link_libraries(InfiniTensor fmt::fmt)
 
 function(build_test files)
