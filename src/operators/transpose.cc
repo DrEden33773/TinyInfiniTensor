@@ -21,6 +21,10 @@ TransposeObj::TransposeObj(GraphObj *graph, Tensor input, Tensor output,
 }
 
 optional<vector<Shape>> TransposeObj::inferShape(const TensorVec &inputs) {
+  if (inputs.size() != 1) {
+    return std::nullopt;
+  }
+
   const auto &input_tensor = inputs[0];
 
   auto input_shape = input_tensor->getDims();

@@ -12,6 +12,9 @@ ElementWiseObj::ElementWiseObj(OpType type, GraphObj *graph, Tensor input0,
 }
 
 optional<vector<Shape>> ElementWiseObj::inferShape(const TensorVec &inputs) {
+  if (inputs.size() != 2) {
+    return std::nullopt;
+  }
   const auto &A = inputs[0];
   const auto &B = inputs[1];
   auto res = infer_broadcast(A->getDims(), B->getDims());

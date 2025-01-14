@@ -1,5 +1,3 @@
-set(CMAKE_EXPORT_COMPILE_COMMANDS on)
-
 # Do not change these options in this file. Use cmake.config, cmake -DOPTION=VALUE, or ccmake to specify them.
 option(BUILD_TEST "Build tests" OFF)
 
@@ -11,6 +9,12 @@ project(InfiniTensor C CXX)
 cmake_dependent_option(BUILD_TEST_CORE "Build tests for core components" ON BUILD_TEST OFF)
 
 set(DEFAULT_BUILD_TYPE "RelWithDebInfo")
+
+# generate `./build/compile_commands.json` for `clangd`
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Build shared library (a must for `fmtlib/fmt`)
+set(BUILD_SHARED_LIBS TRUE)
 
 # Build Type
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -40,6 +44,14 @@ find_package(
 
 # OpenMP
 find_package(OpenMP)
+
+# Dependency: fmtlib/fmt
+include(FetchContent)
+FetchContent_Declare(
+  fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt
+  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rd-party/fmt)
+FetchContent_MakeAvailable(fmt)
 
 if(OpenMP_C_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -82,14 +94,6 @@ endif()
 
 # Libraries
 add_library(InfiniTensor SHARED ${SRC})
-
-# Dependency: fmtlib/fmt
-include(FetchContent)
-FetchContent_Declare(
-  fmt
-  GIT_REPOSITORY https://github.com/fmtlib/fmt
-  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rd-party/fmt)
-FetchContent_MakeAvailable(fmt)
 target_link_libraries(InfiniTensor fmt::fmt)
 
 function(build_test files)

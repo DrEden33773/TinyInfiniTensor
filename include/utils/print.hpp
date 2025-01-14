@@ -2,18 +2,23 @@
 
 #include "fmt/core.h"
 #include <iterator>
-#include <sstream>
 #include <vector>
 
 namespace infini {
 
 template <typename T>
 FMT_INLINE std::string to_string(const std::vector<T> &vec) {
-  std::ostringstream oss;
-  oss << "[";
-  std::copy(vec.begin(), vec.end(), std::ostream_iterator<T>(oss, ", "));
-  oss << "]";
-  return oss.str();
+  std::string s{"["};
+  auto it = std::back_inserter(s);
+
+  for (const auto &v : vec) {
+    it = fmt::format_to(it, "{}", v);
+    if (&v != &vec.back())
+      it = fmt::format_to(it, ", ");
+  }
+  it = fmt::format_to(it, "]");
+
+  return s;
 }
 
 template <typename T> FMT_INLINE std::string to_string(const T &val) {

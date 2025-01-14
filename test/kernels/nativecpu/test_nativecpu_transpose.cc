@@ -26,7 +26,7 @@ TEST(Transpose, NativeCpu) {
   auto output_size = 1 * 2 * 3 * 4;
   vector<float> output_data(output_data_ptr, output_data_ptr + output_size);
 
-  eprintln("output_data: {}", to_string(output_data));
+  println("output_data: {}", to_string(output_data));
 
   EXPECT_TRUE(op->getOutput(0)->equalData(
       vector<float>{0,  1,  2,  3,  12, 13, 14, 15, 4,  5,  6,  7,

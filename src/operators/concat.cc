@@ -15,6 +15,10 @@ ConcatObj::ConcatObj(GraphObj *graph, TensorVec inputs, Tensor output, int _dim)
 }
 
 optional<vector<Shape>> ConcatObj::inferShape(const TensorVec &inputs) {
+  if (inputs.empty()) {
+    return std::nullopt;
+  }
+
   // check rank
   auto rank = inputs[0]->getRank();
   auto same_rank =

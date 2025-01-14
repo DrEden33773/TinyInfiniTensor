@@ -84,7 +84,7 @@ void Allocator::free(size_t addr, size_t size) {
   }
 
   if (it->second != size) {
-    eprintln(
+    println(
         "[WARN]: offset[{}] allocated size `{}` > expected size `{}` to free",
         addr, it->second, size);
   }
@@ -120,8 +120,8 @@ void Allocator::free(size_t addr, size_t size) {
 void *Allocator::getPtr() {
   if (this->ptr == nullptr) {
     this->ptr = runtime->alloc(this->peak);
-    eprintln("Allocator really alloc `{}` with `{}` bytes", this->ptr,
-             this->peak);
+    println("Allocator really alloc `{}` with `{}` bytes", this->ptr,
+            this->peak);
   }
   return this->ptr;
 }
@@ -131,6 +131,6 @@ size_t Allocator::getAlignedSize(size_t size) {
 }
 
 void Allocator::info() {
-  eprintln("Used memory: {}, peak memory: {}", this->used, this->peak);
+  println("Used memory: {}, peak memory: {}", this->used, this->peak);
 }
 } // namespace infini
