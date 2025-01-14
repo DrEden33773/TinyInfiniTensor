@@ -128,7 +128,8 @@ void GraphObj::dataMalloc() {
   // topological sorting first
   IT_ASSERT(topo_sort() == true);
 
-  vector<size_t> tensor_ptr_offsets(tensors.size());
+  vector<size_t> tensor_ptr_offsets;
+  tensor_ptr_offsets.reserve(tensors.size());
   for (auto &tensor : tensors) {
     auto offset = allocator.alloc(tensor->getBytes());
     tensor_ptr_offsets.emplace_back(offset);

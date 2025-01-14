@@ -20,7 +20,7 @@ public:
   /**
    * @brief Matmul operator with batch broadcast and tensor transpose
    * supports. Only one tensor with singe batch can be broadcasted due to the
-   * BLAS interface restriction. Tranpose indicates whether the last two
+   * BLAS interface restriction. Transpose indicates whether the last two
    * dimensions should be transposed before Matmul and does not affect other
    * leading dimensions.
    *
@@ -40,7 +40,7 @@ public:
             bool transB = false);
   OP_CLONE(MatmulObj);
 
-  std::string toString() const override;
+  [[nodiscard]] std::string toString() const override;
   optional<vector<Shape>> inferShape(const TensorVec &inputs) override;
 
   [[nodiscard]] int numInputs() const override { return (int)inputs.size(); }

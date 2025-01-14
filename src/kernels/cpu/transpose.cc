@@ -29,8 +29,8 @@ class NaiveTranspose : public CpuKernelWithoutConfig {
     for (size_t inIdx = 0; inIdx < inSize; ++inIdx) {
       auto posInput = idx2Pos(inDim, inIdx);
       int outIdx = 0;
-      for (size_t j = 0, jEnd = perm.size(); j < jEnd; ++j) {
-        outIdx = outIdx * inDim[perm[j]] + posInput[perm[j]];
+      for (int j : perm) {
+        outIdx = outIdx * inDim[j] + posInput[j];
       }
       outPtr[outIdx] = inPtr[inIdx];
     }

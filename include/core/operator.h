@@ -20,7 +20,8 @@ protected:
 public:
   OperatorObj(OpType opType, TensorVec inputs, TensorVec outputs);
   virtual optional<vector<Shape>> inferShape(const TensorVec &inputs) = 0;
-  virtual vector<DataType> inferDataType(const TensorVec &inputs) const;
+  [[nodiscard]] virtual vector<DataType>
+  inferDataType(const TensorVec &inputs) const;
   /**
    * @brief Constructs outputs (if required) and check whether the operator is
    * valid.

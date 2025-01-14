@@ -13,7 +13,7 @@ namespace infini {
 class Allocator {
 private:
   // Default Value = 16MB
-  static constexpr size_t MAX_SIZE = 16ULL << 20;
+  static constexpr size_t MAX_SIZE = 512ULL << 20;
 
   Runtime runtime;
 

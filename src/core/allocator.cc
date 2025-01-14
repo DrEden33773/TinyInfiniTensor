@@ -13,6 +13,8 @@
 #include <string>
 #include <utility>
 
+#define MERGE_ADJ_LEFT_FREE_BLOCK
+
 namespace infini {
 
 Allocator::Allocator(Runtime runtime) : runtime(std::move(runtime)) {
@@ -48,11 +50,11 @@ size_t Allocator::alloc(size_t size) {
     peak = std::max(peak, used);
 
     auto remaining = it->second - size;
-    available.erase(it);
     if (remaining > 0) {
       available[offset + size] = remaining;
     }
 
+    available.erase(it);
     return offset;
   }
 
@@ -100,7 +102,8 @@ void Allocator::free(size_t addr, size_t size) {
     available[addr] = size;
   }
 
-  // then merge adjacent free block on the left
+// then merge adjacent free block on the left
+#ifdef MERGE_ADJ_LEFT_FREE_BLOCK
   auto left_it = available.lower_bound(addr); // the first <=, instead of <
   if (left_it != available.begin()) {
     auto prev_it = std::prev(left_it); // that's why we need the `orev` iterator
@@ -111,6 +114,7 @@ void Allocator::free(size_t addr, size_t size) {
       available[addr] = size;
     }
   }
+#endif
 }
 
 void *Allocator::getPtr() {

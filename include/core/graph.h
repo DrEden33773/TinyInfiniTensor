@@ -15,7 +15,7 @@ protected:
 
 public:
   explicit GraphObj(const Runtime &runtime)
-      : runtime(runtime), allocator(runtime), sorted(false) {};
+      : runtime(runtime), allocator(runtime) {};
   [[nodiscard]] string toString() const override;
   [[nodiscard]] Runtime getRuntime() const { return runtime; }
 
@@ -94,7 +94,7 @@ public:
     return ret;
   }
 
-  bool checkValid() const;
+  [[nodiscard]] bool checkValid() const;
 
 private:
   /**
@@ -105,7 +105,7 @@ private:
   /**
    * @brief If the nodes is sorted in topological order.
    */
-  bool sorted;
+  bool sorted{};
 };
 
 } // namespace infini

@@ -1,5 +1,4 @@
 #include "operators/matmul.h"
-
 #include <utility>
 
 namespace infini {

@@ -4,15 +4,24 @@
 namespace infini {
 
 Shape infer_broadcast(const Shape &A, const Shape &B) {
+  // 1. 两个形状的维度数取最大值
+  size_t max_rank = std::max(A.size(), B.size());
+  Shape broadcast_shape(max_rank, 1);
 
-  // =================================== 作业
-  // ===================================
-  // TODO：对 A 和 B 进行双向广播，返回广播后的形状。
-  // REF: https://github.com/onnx/onnx/blob/main/docs/Broadcasting.md
-  // =================================== 作业
-  // ===================================
+  // 2. 从后往前遍历，对每一维进行广播
+  size_t i = A.size(), j = B.size(), k = max_rank;
+  while (k > 0) {
+    size_t a = i > 0 ? A[--i] : 1;
+    size_t b = j > 0 ? B[--j] : 1;
+    // 3. 如果两个维度不相等，也不是 1，则无法广播
+    if (a != b && a != 1 && b != 1) {
+      return {};
+    }
+    // 4. 取两个维度的最大值
+    broadcast_shape[--k] = (int)std::max(a, b);
+  }
 
-  return {};
+  return broadcast_shape;
 }
 
 int get_real_axis(const int &axis, const int &rank) {
