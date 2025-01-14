@@ -5,8 +5,6 @@
 #include "core/operator.h"
 #include "core/tensor.h"
 
-#include <numeric>
-
 namespace infini {
 
 // Launch a broadcast shape based on the shape of input A and B
