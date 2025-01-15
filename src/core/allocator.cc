@@ -13,15 +13,12 @@
 
 namespace infini {
 
-Allocator::Allocator(Runtime runtime) : runtime(std::move(runtime)) {
-  used = 0;
-  peak = 0;
-  ptr = nullptr;
-
+Allocator::Allocator(Runtime runtime)
+    : runtime(std::move(runtime)), used(0), peak(0),
+      alignment(sizeof(uint64_t)), ptr(nullptr) {
   // 'alignment' defaults to sizeof(uint64_t), because it is the length of
   // the longest data type currently supported by the DataType field of
   // the tensor
-  alignment = sizeof(uint64_t);
 }
 
 Allocator::~Allocator() {
@@ -122,11 +119,12 @@ void *Allocator::getPtr() {
   return this->ptr;
 }
 
-size_t Allocator::getAlignedSize(size_t size) {
+size_t Allocator::getAlignedSize(size_t size) const {
   return ((size - 1) / this->alignment + 1) * this->alignment;
 }
 
 void Allocator::info() {
   println("Used memory: {}, peak memory: {}", this->used, this->peak);
 }
+
 } // namespace infini

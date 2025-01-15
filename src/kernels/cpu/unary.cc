@@ -2,6 +2,7 @@
 #include "core/kernel.h"
 
 namespace infini {
+
 class NativeUnary : public CpuKernelWithoutConfig {
   template <typename T> static T reluCompute(T val) {
     return std::max(T(0), val);
@@ -16,7 +17,7 @@ class NativeUnary : public CpuKernelWithoutConfig {
     auto outDim = op->getOutput()->getDims();
     auto n = op->getOutput()->size();
 
-    T (*_doCompute)(T val);
+    T (*_doCompute)(T val){};
     switch (op->getOpType().underlying()) {
     case OpType::Relu:
       _doCompute = reluCompute<T>;
@@ -59,9 +60,14 @@ class Clip : public CpuKernelWithoutConfig {
     auto n = op->getOutput()->size();
     for (size_t offset = 0; offset < n; offset++) {
       auto val = *inptr++;
-      *outptr++ = (minValue && val < *minValue)   ? *minValue
-                  : (maxValue && val > *maxValue) ? *maxValue
-                                                  : val;
+
+      if (minValue && val < *minValue) {
+        *outptr++ = *minValue;
+      } else if (maxValue && val > *maxValue) {
+        *outptr++ = *maxValue;
+      } else {
+        *outptr++ = val;
+      }
     }
   }
 

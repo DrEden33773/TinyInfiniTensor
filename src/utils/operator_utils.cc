@@ -9,7 +9,10 @@ Shape infer_broadcast(const Shape &A, const Shape &B) {
   Shape broadcast_shape(max_rank, 1);
 
   // 2. 从后往前遍历，对每一维进行广播
-  size_t i = A.size(), j = B.size(), k = max_rank;
+  size_t i = A.size();
+  size_t j = B.size();
+  size_t k = max_rank;
+
   while (k > 0) {
     size_t a = i > 0 ? A[--i] : 1;
     size_t b = j > 0 ? B[--j] : 1;
@@ -17,6 +20,7 @@ Shape infer_broadcast(const Shape &A, const Shape &B) {
     if (a != b && a != 1 && b != 1) {
       return {};
     }
+
     // 4. 取两个维度的最大值
     broadcast_shape[--k] = (int)std::max(a, b);
   }
@@ -27,7 +31,7 @@ Shape infer_broadcast(const Shape &A, const Shape &B) {
 int get_real_axis(const int &axis, const int &rank) {
   IT_ASSERT(rank >= 1);
   IT_ASSERT(axis >= -rank && axis <= (rank - 1));
-  int newAxis;
+  int newAxis{};
   if (axis < 0) {
     newAxis = rank + axis;
   } else {
@@ -39,7 +43,8 @@ int get_real_axis(const int &axis, const int &rank) {
 Shape locate_index(size_t inputN, const Shape &shape) {
   Shape ans(shape.size());
   auto i = ans.rbegin();
-  auto j = shape.rbegin(), ej = shape.rend();
+  auto j = shape.rbegin();
+  auto ej = shape.rend();
   while (j != ej) {
     auto div = std::div((int)inputN, *j++);
     *i++ = div.rem;

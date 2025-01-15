@@ -17,7 +17,7 @@ namespace infini {
 void GraphObj::addOperatorAndConnect(const Operator &op) {
   sorted = false;
   ops.push_back(op);
-  for (auto &input : op->getInputs()) {
+  for (const auto &input : op->getInputs()) {
     if (input) {
       input->addTarget(op);
       if (auto pred = input->getSource()) {
@@ -26,7 +26,7 @@ void GraphObj::addOperatorAndConnect(const Operator &op) {
       }
     }
   }
-  for (auto &output : op->getOutputs()) {
+  for (const auto &output : op->getOutputs()) {
     if (output) {
       output->setSource(op);
       for (auto &succ : output->getTargets()) {
@@ -40,17 +40,21 @@ void GraphObj::addOperatorAndConnect(const Operator &op) {
 string GraphObj::toString() const {
   std::ostringstream oss;
   oss << "┌─[Graph Tensors]" << "\n";
-  for (const auto &tensor : tensors)
+  for (const auto &tensor : tensors) {
     oss << "│" << (&tensor == &tensors.back() ? "   └" : "   ├") << "───"
         << tensor << "\n";
+  }
 
   oss << "└─[Graph operators]" << "\n";
   for (const auto &op : ops) {
-    vector<UidBaseType> preds, succs;
-    for (auto &o : op->getPredecessors())
+    vector<UidBaseType> preds;
+    vector<UidBaseType> succs;
+    for (auto &o : op->getPredecessors()) {
       preds.emplace_back(o->getGuid());
-    for (auto &o : op->getSuccessors())
+    }
+    for (auto &o : op->getSuccessors()) {
       succs.emplace_back(o->getGuid());
+    }
     oss << (&op == &ops.back() ? "    └" : "    ├") << "───";
     oss << "{OP: " << op->getGuid();
     oss << ", pred: " << vecToString(preds);
@@ -98,8 +102,10 @@ void GraphObj::optimize() {
 
   std::unordered_map<GuidType, Operator> op_map;
   std::unordered_map<GuidType, Tensor> tensor_map;
-  std::unordered_map<GuidType, size_t> op_i_map, tensor_i_map;
-  std::unordered_set<GuidType> erased_ops, erased_tensors;
+  std::unordered_map<GuidType, size_t> op_i_map;
+  std::unordered_map<GuidType, size_t> tensor_i_map;
+  std::unordered_set<GuidType> erased_ops;
+  std::unordered_set<GuidType> erased_tensors;
 
   size_t op_i = 0;
   for (auto &op : ops) {
@@ -113,96 +119,109 @@ void GraphObj::optimize() {
     tensor_i_map[tensor->getGuid()] = tensor_i++;
   }
 
-  // 1. 计划合并 transpose
+  // 1. 计划合并两个一组的相邻 transpose
   for (const auto &[guid, op] : op_map) {
-    if (erased_ops.find(guid) != erased_ops.end())
+    if (erased_ops.find(guid) != erased_ops.end()) {
       continue;
-
-    if (op->getOpType() == OpType::Transpose) {
-      auto in = op->getInputs(0);
-      auto out = op->getOutput(0);
-      auto next_op = out->getTargets()[0];
-
-      if (next_op->getOpType() == OpType::Transpose) {
-        // 先解析为 Ref<TransposeObj>
-        auto tr_op = as<TransposeObj>(op);
-        auto next_tr_op = as<TransposeObj>(next_op);
-
-        // 只有两次的 permute 相同, 才能合并
-        if (tr_op->getPermute() == next_tr_op->getPermute()) {
-          auto next_out = next_op->getOutput(0);
-          auto next_next_op = next_out->getTargets()[0];
-
-          // 根据测试样例, 直接替换 next_next_op.input 为 input
-          op_map[next_next_op->getGuid()]->replaceInput(next_out, in);
-
-          // 直接替换 targets
-          auto in_i = tensor_i_map[in->getGuid()];
-          tensors[in_i]->removeTarget(op);
-          tensors[in_i]->addTarget(next_next_op);
-
-          // 直接修正 pred
-          op_map[next_next_op->getGuid()]->removePredecessors(next_op);
-
-          // 更新计划
-          erased_ops.insert(guid);
-          erased_ops.insert(next_op->getGuid());
-          op_i_map.erase(guid);
-          op_i_map.erase(next_op->getGuid());
-          tensor_i_map.erase(out->getGuid());
-          tensor_i_map.erase(next_out->getGuid());
-        }
-      }
     }
+
+    if (op->getOpType() != OpType::Transpose) {
+      continue;
+    }
+
+    auto in = op->getInputs(0);
+    auto out = op->getOutput(0);
+    auto next_op = out->getTargets()[0];
+
+    if (next_op->getOpType() != OpType::Transpose) {
+      continue;
+    }
+
+    // 先解析为 Ref<TransposeObj>
+    auto tr_op = as<TransposeObj>(op);
+    auto next_tr_op = as<TransposeObj>(next_op);
+
+    // 只有两次的 permute 相同, 才能合并
+    if (tr_op->getPermute() != next_tr_op->getPermute()) {
+      continue;
+    }
+
+    auto next_out = next_op->getOutput(0);
+    auto next_next_op = next_out->getTargets()[0];
+
+    // 根据测试样例, 直接替换 next_next_op.input 为 input
+    op_map[next_next_op->getGuid()]->replaceInput(next_out, in);
+
+    // 直接替换 targets
+    auto in_i = tensor_i_map[in->getGuid()];
+    tensors[in_i]->removeTarget(op);
+    tensors[in_i]->addTarget(next_next_op);
+
+    // 直接修正 pred
+    op_map[next_next_op->getGuid()]->removePredecessors(next_op);
+
+    // 更新计划
+    erased_ops.insert(guid);
+    erased_ops.insert(next_op->getGuid());
+    op_i_map.erase(guid);
+    op_i_map.erase(next_op->getGuid());
+    tensor_i_map.erase(out->getGuid());
+    tensor_i_map.erase(next_out->getGuid());
   }
 
-  // 2. 计划将 transpose 融入到 matmul 中
+  // 2. 计划将 transpose 融入到邻接后继 matmul 中
   for (const auto &[guid, op] : op_map) {
-    if (erased_ops.find(guid) != erased_ops.end())
+    if (erased_ops.find(guid) != erased_ops.end()) {
       continue;
-
-    if (op->getOpType() == OpType::Transpose) {
-      auto in = op->getInputs(0);
-      auto out = op->getOutput(0);
-      auto next_op = out->getTargets()[0];
-
-      // 解析为 Ref<TransposeObj>
-      auto curr_tr_op = as<TransposeObj>(op);
-
-      auto curr_perm = curr_tr_op->getPermute();
-      auto is_last_two_dims_swapped =
-          curr_perm.size() >= 2 &&
-          curr_perm[curr_perm.size() - 1] == (int)(curr_perm.size() - 2) &&
-          curr_perm[curr_perm.size() - 2] == (int)(curr_perm.size() - 1);
-
-      if (next_op->getOpType() == OpType::MatMul && is_last_two_dims_swapped) {
-        // 先解析为 Ref<MatmulObj>
-        auto mul_op = as<MatmulObj>(next_op);
-
-        // 区分 curr_out 是 A 还是 B, 分情况讨论
-        if (out->getGuid() == mul_op->getInputs(0)->getGuid()) {
-          mul_op->setTransA(!mul_op->getTransA());
-        } else {
-          mul_op->setTransB(!mul_op->getTransB());
-        }
-
-        // 根据测试样例, 还要把对应的 A / B 直接替换为 curr_in
-        op_map[mul_op->getGuid()]->replaceInput(op->getOutput(0), in);
-
-        // 直接替换 targets
-        auto in_i = tensor_i_map[in->getGuid()];
-        tensors[in_i]->removeTarget(op);
-        tensors[in_i]->addTarget(next_op);
-
-        // 更新 pred
-        op_map[next_op->getGuid()]->removePredecessors(op);
-
-        // 更新计划
-        erased_ops.insert(guid);
-        op_i_map.erase(guid);
-        tensor_i_map.erase(out->getGuid());
-      }
     }
+
+    if (op->getOpType() != OpType::Transpose) {
+      continue;
+    }
+
+    auto in = op->getInputs(0);
+    auto out = op->getOutput(0);
+    auto next_op = out->getTargets()[0];
+
+    // 解析为 Ref<TransposeObj>
+    auto curr_tr_op = as<TransposeObj>(op);
+
+    auto curr_perm = curr_tr_op->getPermute();
+    auto is_last_two_dims_swapped =
+        curr_perm.size() >= 2 &&
+        curr_perm[curr_perm.size() - 1] == (int)(curr_perm.size() - 2) &&
+        curr_perm[curr_perm.size() - 2] == (int)(curr_perm.size() - 1);
+
+    // 只有满足 `最后两维交换` 的条件, 才能继续
+    if (next_op->getOpType() != OpType::MatMul || !is_last_two_dims_swapped) {
+      continue;
+    }
+
+    // 先解析为 Ref<MatmulObj>
+    auto mul_op = as<MatmulObj>(next_op);
+
+    // 区分 curr_out 是 A 还是 B, 分情况讨论
+    if (out->getGuid() == mul_op->getInputs(0)->getGuid()) {
+      mul_op->setTransA(!mul_op->getTransA());
+    } else {
+      mul_op->setTransB(!mul_op->getTransB());
+    }
+
+    // 根据测试样例, 还要把对应的 A / B 直接替换为 curr_in
+    op_map[mul_op->getGuid()]->replaceInput(op->getOutput(0), in);
+
+    // 直接替换 targets
+    auto in_i = tensor_i_map[in->getGuid()];
+    tensors[in_i]->removeTarget(op);
+    tensors[in_i]->addTarget(next_op);
+
+    // 更新 pred
+    op_map[next_op->getGuid()]->removePredecessors(op);
+
+    // 更新计划
+    erased_ops.insert(guid);
+    op_i_map.erase(guid);
+    tensor_i_map.erase(out->getGuid());
   }
 
   // 3. 应用计划
@@ -259,9 +278,9 @@ void GraphObj::dataMalloc() {
     tensor_ptr_offsets.emplace_back(offset);
   }
 
-  auto ptr = reinterpret_cast<char *>(allocator.getPtr());
+  auto *ptr = static_cast<char *>(allocator.getPtr());
   for (size_t i = 0; i < tensors.size(); ++i) {
-    auto tensor_addr = reinterpret_cast<void *>(ptr + tensor_ptr_offsets[i]);
+    auto *tensor_addr = static_cast<void *>(ptr + tensor_ptr_offsets[i]);
     tensors[i]->setDataBlob(make_ref<BlobObj>(runtime, tensor_addr));
   }
 
@@ -282,8 +301,9 @@ Tensor GraphObj::addTensor(const Tensor &tensor) {
 }
 
 TensorVec GraphObj::addTensor(const TensorVec &tensors) {
-  for (auto &t : tensors)
+  for (const auto &t : tensors) {
     addTensor(t);
+  }
   return tensors;
 }
 
@@ -293,8 +313,8 @@ TensorVec GraphObj::addTensor(const TensorVec &tensors) {
 // "predecessors" and "successors" of an operator of "ops" must be in "ops".
 bool GraphObj::checkValid() const {
   for (const auto &tensor : tensors) {
-    IT_ASSERT(
-        !(tensor->getTargets().size() == 0 && nullptr == tensor->getSource()));
+    IT_ASSERT(tensor->getTargets().size() != 0 ||
+              nullptr != tensor->getSource());
     for (const auto &op : tensor->getTargets()) {
       IT_ASSERT(std::find(ops.begin(), ops.end(), op) != ops.end());
     }

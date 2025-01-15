@@ -4,6 +4,7 @@
 #include "core/tensor.h"
 
 namespace infini {
+
 using KernelAttrs = std::tuple<Device, OpType::underlying_t>;
 
 class GraphObj;
@@ -31,7 +32,7 @@ public:
    */
   bool checkValid(GraphObj *graph);
 
-public: // getter and setter
+  // getter and setter
   [[nodiscard]] const TensorVec &getInputs() const { return inputs; }
   [[nodiscard]] const TensorVec &getOutputs() const { return outputs; }
   [[nodiscard]] Tensor getInputs(size_t i) const { return inputs.at(i); }
@@ -75,7 +76,7 @@ private:
   void addSuccessors(const Operator &op) { successors.emplace_back(op); }
   void removePredecessors(const Operator &op);
   void removeSuccessors(const Operator &op);
-  void replaceInput(Tensor t1, Tensor t2);
+  void replaceInput(const Tensor &t1, const Tensor &t2);
 };
 
 #define OP_CLONE(OpObj)                                                        \

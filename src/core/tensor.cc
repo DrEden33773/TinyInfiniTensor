@@ -17,22 +17,25 @@ TensorObj::TensorObj(Shape shape_, DataType dtype, Runtime runtime)
 string TensorObj::toString() const {
   // Convert data pointer to string
   std::stringstream ss;
-  if (data != nullptr)
+  if (data != nullptr) {
     ss << data->getPtr<void *>();
-  else
+  } else {
     ss << "✘";
+  }
   string ret =
       "{tensor: " + std::to_string(guid) + ", fuid: " + std::to_string(fuid) +
       ", shape: " + vecToString(shape) + ", dtype: " + dtype.toString() +
       ", runtime: " + runtime->toString() + ", data: " + ss.str();
   vector<UidBaseType> targetGuids;
   targetGuids.reserve(targets.size());
-  for (const auto &op : targets)
+  for (const auto &op : targets) {
     targetGuids.emplace_back(op.lock()->getGuid());
-  if (auto o = source.lock())
+  }
+  if (auto o = source.lock()) {
     ret += ", source: " + std::to_string(o->getGuid());
-  else
+  } else {
     ret += ", source: ✘";
+  }
   ret += ", targets: " + vecToString(targetGuids) + "}";
   return ret;
 }
@@ -46,8 +49,9 @@ void TensorObj::setShape(Shape shape_) {
 
 void TensorObj::printData() const {
   IT_ASSERT(data != nullptr);
-  if (!runtime->isCpu())
+  if (!infini::RuntimeObj::isCpu()) {
     IT_TODO_HALT();
+  }
 
 #define TRY_PRINT(N)                                                           \
   if (dtype == DataType(N))                                                    \
@@ -79,8 +83,9 @@ bool TensorObj::equalData(const Tensor &rhs, double relativeError) const {
   IT_ASSERT(getDType() == rhs->getDType());
   IT_ASSERT(runtime->isCpu());
   IT_ASSERT(rhs->getRuntime()->isCpu());
-  if (size() != rhs->size())
+  if (size() != rhs->size()) {
     return false;
+  }
 
 #define TEST_EQUAL(N)                                                          \
   if (dtype == DataType(N))                                                    \
@@ -88,22 +93,22 @@ bool TensorObj::equalData(const Tensor &rhs, double relativeError) const {
                          rhs->getRawDataPtr<DT<N>::t *>(), size(),             \
                          relativeError);
 
-  TEST_EQUAL(0)           // fmt: new line
-  else TEST_EQUAL(1)      //
-      else TEST_EQUAL(2)  //
-      else TEST_EQUAL(3)  //
-      else TEST_EQUAL(4)  //
-      else TEST_EQUAL(5)  //
-      else TEST_EQUAL(6)  //
-      else TEST_EQUAL(7)  //
-      else TEST_EQUAL(8)  //
-      else TEST_EQUAL(9)  //
-      else TEST_EQUAL(10) //
-      else TEST_EQUAL(11) //
-      else TEST_EQUAL(12) //
-      else TEST_EQUAL(13) //
-      else TEST_EQUAL(16) //
-      else IT_TODO_HALT();
+  TEST_EQUAL(0)  // fmt: new line
+  TEST_EQUAL(1)  //
+  TEST_EQUAL(2)  //
+  TEST_EQUAL(3)  //
+  TEST_EQUAL(4)  //
+  TEST_EQUAL(5)  //
+  TEST_EQUAL(6)  //
+  TEST_EQUAL(7)  //
+  TEST_EQUAL(8)  //
+  TEST_EQUAL(9)  //
+  TEST_EQUAL(10) //
+  TEST_EQUAL(11) //
+  TEST_EQUAL(12) //
+  TEST_EQUAL(13) //
+  TEST_EQUAL(16) //
+  IT_TODO_HALT();
 
 #undef TEST_EQUAL
 }

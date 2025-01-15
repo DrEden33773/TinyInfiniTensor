@@ -2,6 +2,7 @@
 #include "core/operator.h"
 
 namespace infini {
+
 /**
  * @brief Concatenate several tensors into one. All the input tensors should
  * have the same shape except for the concatenated dimension.
@@ -29,4 +30,5 @@ public:
   [[nodiscard]] int numOutputs() const override { return 1; }
   [[nodiscard]] int getDim() const { return dim; }
 };
+
 } // namespace infini

@@ -18,7 +18,7 @@ public:
   BlobObj &operator=(BlobObj const &) = delete;
   ~BlobObj() {};
 
-  template <typename T> T getPtr() const { return reinterpret_cast<T>(ptr); }
+  template <typename T> T getPtr() const { return static_cast<T>(ptr); }
 };
 
 } // namespace infini

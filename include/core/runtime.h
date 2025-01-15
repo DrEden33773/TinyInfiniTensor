@@ -3,7 +3,6 @@
 #include "core/ref.h"
 
 namespace infini {
-using u8 = uint8_t;
 
 class TensorObj;
 class OperatorObj;
@@ -20,7 +19,7 @@ using Blob = Ref<BlobObj>;
 using TensorVec = vector<Tensor>;
 using OpVec = vector<Operator>;
 
-enum class Device : u8 { CPU = 1 };
+enum class Device : uint8_t { CPU = 1 };
 
 class RuntimeObj : public std::enable_shared_from_this<RuntimeObj> {
 protected:
@@ -40,7 +39,7 @@ public:
   virtual void *alloc(size_t size) = 0;
   virtual void dealloc(void *ptr) = 0;
 
-  bool isCpu() const { return true; }
+  static bool isCpu() { return true; }
 
   virtual string toString() const = 0;
 };

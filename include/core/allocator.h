@@ -40,8 +40,6 @@ private:
 
 public:
   Allocator(Runtime runtime);
-  Allocator(Allocator &&alloc) noexcept = default;
-  Allocator &operator=(Allocator &&alloc) noexcept = default;
 
   virtual ~Allocator();
 
@@ -66,6 +64,6 @@ public:
 private:
   // function: memory alignment, rounded up
   // return: size of the aligned memory block
-  size_t getAlignedSize(size_t size);
+  [[nodiscard]] size_t getAlignedSize(size_t size) const;
 };
 } // namespace infini

@@ -3,6 +3,7 @@
 #include "utils/operator_utils.h"
 
 namespace infini {
+
 class NativeElementWise : public CpuKernelWithoutConfig {
   template <typename T> static T addCompute(T val0, T val1) {
     return val0 + val1;
@@ -50,7 +51,7 @@ class NativeElementWise : public CpuKernelWithoutConfig {
     Shape strideB = getStride(b);
 
     auto n = op->getOutput()->size();
-    T (*_doCompute)(T val0, T val1);
+    T (*_doCompute)(T val0, T val1){};
     switch (op->getOpType().underlying()) {
     case OpType::Add:
       _doCompute = addCompute<T>;
@@ -97,4 +98,5 @@ REGISTER_KERNEL(Device::CPU, OpType::Add, NativeElementWise, "addNaive_CPU");
 REGISTER_KERNEL(Device::CPU, OpType::Sub, NativeElementWise, "subNaive_CPU");
 REGISTER_KERNEL(Device::CPU, OpType::Mul, NativeElementWise, "mulNaive_CPU");
 REGISTER_KERNEL(Device::CPU, OpType::Div, NativeElementWise, "divNaive_CPU");
+
 }; // namespace infini

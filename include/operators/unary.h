@@ -3,6 +3,7 @@
 #include <cstdint>
 
 namespace infini {
+
 /**
  * @brief The base class for unary operators.
  *
@@ -97,4 +98,5 @@ private:
   };
 
 DEFINE_UNARY_OBJ(Relu, OpType::Relu)
+
 }; // namespace infini

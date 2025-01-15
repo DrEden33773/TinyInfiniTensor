@@ -4,6 +4,7 @@
 #include <utility>
 
 namespace infini {
+
 TransposeObj::TransposeObj(GraphObj *graph, const Tensor &input, Tensor output,
                            vector<int> permute)
     : OperatorObj(OpType::Transpose, {input}, {std::move(output)}) {
@@ -50,4 +51,5 @@ std::string TransposeObj::toString() const {
   os << "output=" << outputs[0]->getGuid() << ")";
   return os.str();
 }
+
 }; // namespace infini

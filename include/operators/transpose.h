@@ -2,6 +2,7 @@
 #include "core/operator.h"
 
 namespace infini {
+
 /**
  * @brief Transpose the input tensor similar to numpy.transpose.
  *
@@ -29,4 +30,5 @@ public:
 private:
   vector<int> transposePermute;
 };
+
 } // namespace infini

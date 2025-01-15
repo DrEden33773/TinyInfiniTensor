@@ -4,10 +4,11 @@
 #include <cstring>
 
 namespace infini {
+
 void NativeCpuRuntimeObj::run(const Graph &graph) const {
   const auto &kernelRegistry = KernelRegistry::getInstance();
 
-  for (auto &op : graph->getOperators()) {
+  for (const auto &op : graph->getOperators()) {
     auto kernelAttrs = KernelAttrs{device, op->getOpType().underlying()};
     Kernel *kernel = kernelRegistry.getKernel(kernelAttrs);
     kernel->compute(op, this);
@@ -16,7 +17,7 @@ void NativeCpuRuntimeObj::run(const Graph &graph) const {
 
 string NativeCpuRuntimeObj::toString() const { return "CPU"; }
 
-void NativeCpuRuntimeObj::dealloc(void *ptr) { return free(ptr); }
+void NativeCpuRuntimeObj::dealloc(void *ptr) { free(ptr); }
 
 void *NativeCpuRuntimeObj::alloc(size_t size) {
   return calloc((size + sizeof(uint64_t) - 1) / sizeof(uint64_t),

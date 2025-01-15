@@ -12,12 +12,13 @@ private:
 public:
   virtual ~DataGenerator() {}
   void operator()(void *data, size_t size, DataType dataType) {
-    if (dataType == DataType::UInt32)
-      fill(reinterpret_cast<uint32_t *>(data), size);
-    else if (dataType == DataType::Float32)
-      fill(reinterpret_cast<float *>(data), size);
-    else
+    if (dataType == DataType::UInt32) {
+      fill(static_cast<uint32_t *>(data), size);
+    } else if (dataType == DataType::Float32) {
+      fill(static_cast<float *>(data), size);
+    } else {
       IT_TODO_HALT();
+    }
   }
 };
 
@@ -54,6 +55,8 @@ private:
   }
   void fill(float *data, size_t size) override { fill<float>(data, size); }
 };
+
 using OneGenerator = ValGenerator<1>;
 using ZeroGenerator = ValGenerator<0>;
+
 } // namespace infini

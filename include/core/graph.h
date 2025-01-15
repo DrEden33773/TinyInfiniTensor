@@ -25,14 +25,16 @@ public:
   TensorVec addTensor(const TensorVec &tensors);
   void removeOperator(const Operator &op) {
     auto it = std::find(ops.begin(), ops.end(), op);
-    if (it != ops.end())
+    if (it != ops.end()) {
       ops.erase(it);
+    }
   }
 
   void removeTensor(const Tensor &tensor) {
     auto it = std::find(tensors.begin(), tensors.end(), tensor);
-    if (it != tensors.end())
+    if (it != tensors.end()) {
       tensors.erase(it);
+    }
   }
 
   [[nodiscard]] const TensorVec &getTensors() const { return tensors; }
@@ -76,22 +78,26 @@ public:
   /**
    * @brief Gets input tensors of this graph.
    */
-  [[nodiscard]] inline TensorVec getInputs() const {
+  [[nodiscard]] TensorVec getInputs() const {
     TensorVec ret;
-    for (const auto &t : tensors)
-      if (!t->getSource())
+    for (const auto &t : tensors) {
+      if (!t->getSource()) {
         ret.emplace_back(t);
+      }
+    }
     return ret;
   }
 
   /**
    * @brief Gets output tensors of this graph.
    */
-  [[nodiscard]] inline TensorVec getOutputs() const {
+  [[nodiscard]] TensorVec getOutputs() const {
     TensorVec ret;
-    for (const auto &t : tensors)
-      if (t->getTargets().empty())
+    for (const auto &t : tensors) {
+      if (t->getTargets().empty()) {
         ret.emplace_back(t);
+      }
+    }
     return ret;
   }
 

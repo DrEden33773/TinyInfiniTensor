@@ -1,6 +1,7 @@
 #include "core/data_type.h"
 
 namespace infini {
+
 // Move implementation here to avoid compile time error on some platform
 // to be consistent with onnx
 // https://github.com/onnx/onnx/blob/aeb21329122b96df1d3ef33b500a35ca140b1431/onnx/onnx.proto#L484
@@ -19,4 +20,5 @@ const DataType DataType::Double(11);
 const DataType DataType::UInt32(12);
 const DataType DataType::UInt64(13);
 const DataType DataType::BFloat16(16);
+
 } // namespace infini

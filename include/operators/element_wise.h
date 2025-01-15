@@ -2,6 +2,7 @@
 #include "core/operator.h"
 
 namespace infini {
+
 /**
  * @brief Base class of **binary** element-wise operators.
  * Unary operators like activations are not the derived classes of
@@ -41,4 +42,5 @@ DEFINE_ELEMENT_WISE_OBJ(Add, OpType::Add)
 DEFINE_ELEMENT_WISE_OBJ(Sub, OpType::Sub)
 DEFINE_ELEMENT_WISE_OBJ(Mul, OpType::Mul)
 DEFINE_ELEMENT_WISE_OBJ(Div, OpType::Div)
+
 }; // namespace infini

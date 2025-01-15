@@ -4,6 +4,7 @@
 #include <utility>
 
 namespace infini {
+
 ElementWiseObj::ElementWiseObj(OpType type, GraphObj *graph, Tensor input0,
                                Tensor input1, Tensor output)
     : OperatorObj(type, {std::move(input0), std::move(input1)},

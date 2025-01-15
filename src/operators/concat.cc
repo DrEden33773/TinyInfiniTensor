@@ -6,6 +6,7 @@
 #include <utility>
 
 namespace infini {
+
 ConcatObj::ConcatObj(GraphObj *graph, TensorVec inputs, Tensor output, int _dim)
     : OperatorObj(OpType::Concat, inputs, {std::move(output)}) {
   int rank = (int)inputs[0]->getRank();
@@ -51,12 +52,14 @@ std::string ConcatObj::toString() const {
   std::ostringstream os;
   os << "Concat[" << getGuid() << "]";
   os << "(";
-  for (const auto &input : inputs)
+  for (const auto &input : inputs) {
     os << vecToString(input->getDims()) << ", ";
+  }
   os << "dim=" << dim << ", ";
   os << "input=";
-  for (const auto &input : inputs)
+  for (const auto &input : inputs) {
     os << input->getGuid() << ", ";
+  }
   os << "output=" << outputs[0]->getGuid() << ")";
   return os.str();
 }

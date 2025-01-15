@@ -5,6 +5,7 @@
 #include <cstdint>
 
 namespace infini {
+
 struct OpType {
   using underlying_t = uint8_t;
   enum : underlying_t {

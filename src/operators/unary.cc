@@ -3,6 +3,7 @@
 #include <utility>
 
 namespace infini {
+
 UnaryObj::UnaryObj(OpType type, GraphObj *graph, Tensor input, Tensor output)
     : OperatorObj(type, {std::move(input)}, {std::move(output)}) {
   IT_ASSERT(checkValid(graph));
@@ -132,4 +133,5 @@ DataType CastObj::getOutputDataType() const {
     IT_TODO_HALT();
   }
 }
+
 }; // namespace infini

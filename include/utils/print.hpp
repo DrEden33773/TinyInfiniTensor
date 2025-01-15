@@ -14,8 +14,9 @@ FMT_INLINE std::string to_string(const std::vector<T> &vec) {
 
   for (const auto &v : vec) {
     it = fmt::format_to(it, "{}", v);
-    if (&v != &vec.back())
+    if (&v != &vec.back()) {
       it = fmt::format_to(it, ", ");
+    }
   }
   it = fmt::format_to(it, "]");
 
@@ -28,19 +29,19 @@ template <typename T> FMT_INLINE std::string to_string(const T &val) {
 
 template <typename... T>
 FMT_INLINE void println(fmt::format_string<T...> fmt, T &&...args) {
-  return fmt::println(stdout, fmt, static_cast<T &&>(args)...);
+  return fmt::println(stdout, fmt, std::forward<T>(args)...);
 }
 template <typename... T>
 FMT_INLINE void print(fmt::format_string<T...> fmt, T &&...args) {
-  return fmt::print(stdout, fmt, static_cast<T &&>(args)...);
+  return fmt::print(stdout, fmt, std::forward<T>(args)...);
 }
 template <typename... T>
 FMT_INLINE void eprintln(fmt::format_string<T...> fmt, T &&...args) {
-  return fmt::println(stderr, fmt, static_cast<T &&>(args)...);
+  return fmt::println(stderr, fmt, std::forward<T>(args)...);
 }
 template <typename... T>
 FMT_INLINE void eprint(fmt::format_string<T...> fmt, T &&...args) {
-  return fmt::print(stderr, fmt, static_cast<T &&>(args)...);
+  return fmt::print(stderr, fmt, std::forward<T>(args)...);
 }
 
 } // namespace infini

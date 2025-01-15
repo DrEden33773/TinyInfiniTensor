@@ -1,6 +1,7 @@
 ﻿#include "core/op_type.h"
 
 namespace infini {
+
 const char *OpType::toString() const {
 #define CASE(NAME)                                                             \
   case OpType::NAME:                                                           \

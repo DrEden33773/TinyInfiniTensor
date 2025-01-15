@@ -2,6 +2,7 @@
 #include "core/operator.h"
 
 namespace infini {
+
 /**
  * @brief Matrix multiplication.
  *
@@ -14,7 +15,7 @@ private:
   bool transA, transB;
 
   // Auxiliary attributes which are not a part of operator attributes.
-  int m, n, k;
+  int m{}, n{}, k{};
 
 public:
   /**

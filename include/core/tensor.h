@@ -8,6 +8,7 @@
 #include <cstring>
 
 namespace infini {
+
 class GraphObj;
 using ShapeElem = int;
 using Shape = vector<ShapeElem>;
@@ -80,25 +81,32 @@ private:
     auto ptr = data->getPtr<T *>();
     dimSzVec[numDims - 1] = shape[numDims - 1];
 
-    for (size_t i = numDims - 1; i != 0; --i)
+    for (size_t i = numDims - 1; i != 0; --i) {
       dimSzVec[i - 1] = dimSzVec[i] * shape[i - 1];
+    }
 
     for (size_t i = 0, iEnd = size(); i < iEnd; ++i) {
-      for (size_t j = 0; j < numDims; ++j)
-        if (i % dimSzVec[j] == 0)
+      for (size_t j = 0; j < numDims; ++j) {
+        if (i % dimSzVec[j] == 0) {
           builder << "[";
+        }
+      }
 
       builder << ptr[i];
-      for (size_t j = 0; j < numDims; ++j)
-        if ((int)i % dimSzVec[j] == dimSzVec[j] - 1)
+      for (size_t j = 0; j < numDims; ++j) {
+        if ((int)i % dimSzVec[j] == dimSzVec[j] - 1) {
           builder << "]";
+        }
+      }
 
-      if (i != size() - 1)
+      if (i != size() - 1) {
         builder << ", ";
+      }
 
       auto column = (size_t)dimSzVec[numDims - 1];
-      if (i % column == column - 1)
+      if (i % column == column - 1) {
         builder << '\n';
+      }
     }
     return builder.str();
   }
@@ -108,14 +116,16 @@ private:
                      double rel = 1e-6) const {
     for (size_t i = 0; i < size; ++i) {
       if constexpr (std::is_integral_v<T>) {
-        if (a[i] != b[i])
+        if (a[i] != b[i]) {
           return false;
+        }
       } else if constexpr (std::is_floating_point_v<T>) {
         if (std::min(fabs(a[i]), fabs(b[i])) == 0. && fabs(a[i] - b[i]) > rel) {
           printf("Error on %zu: %f %f\n", i, a[i], b[i]);
           return false;
-        } else if (std::min(fabs(a[i]), fabs(b[i])) != 0. &&
-                   fabs(a[i] - b[i]) / std::max(fabs(a[i]), fabs(b[i])) > rel) {
+        }
+        if (std::min(fabs(a[i]), fabs(b[i])) != 0. &&
+            fabs(a[i] - b[i]) / std::max(fabs(a[i]), fabs(b[i])) > rel) {
           printf("Error on %zu: %f %f\n", i, a[i], b[i]);
           return false;
         }
@@ -130,10 +140,11 @@ private:
   void setSource(const Operator &op) { source = op; }
   void removeTarget(const Operator &op) {
     for (auto itr = targets.begin(); itr != targets.end();) {
-      if (itr->lock() == op)
+      if (itr->lock() == op) {
         itr = targets.erase(itr);
-      else
+      } else {
         ++itr;
+      }
     }
   }
 };

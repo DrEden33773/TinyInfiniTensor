@@ -7,34 +7,40 @@ class NaiveConcat : public CpuKernelWithoutConfig {
   template <typename T>
   void doCompute(const Operator &_op, const RuntimeObj *context) const {
     auto op = as<ConcatObj>(_op);
-    auto inputs = op->getInputs(), outputs = op->getOutputs();
+    auto inputs = op->getInputs();
+    auto outputs = op->getOutputs();
     auto dim = op->getDim();
     const auto &output = outputs[0];
     std::vector<Shape> iDims;
-    for (const auto &input : inputs)
+    for (const auto &input : inputs) {
       iDims.emplace_back(input->getDims());
+    }
     const auto &outDim = output->getDims();
     size_t blockOffsetInner = 1;
-    for (size_t i = outDim.size() - 1; i > (size_t)dim; --i)
+    for (size_t i = outDim.size() - 1; i > (size_t)dim; --i) {
       blockOffsetInner *= outDim[i];
+    }
     size_t blockOffset = outDim[dim] * blockOffsetInner;
     for (size_t i = 0; i < inputs.size(); ++i) {
       const auto &input = inputs[i];
       auto dimOffset = 0;
       const auto &iDim = iDims[i];
-      for (size_t j = 0; j < i; ++j)
+      for (size_t j = 0; j < i; ++j) {
         dimOffset += iDims[j][dim];
+      }
       size_t localBlockOffset = 1;
-      for (size_t i = iDim.size() - 1; i >= (size_t)dim && i != (size_t)-1; --i)
+      for (size_t i = iDim.size() - 1; i >= (size_t)dim && i != (size_t)-1;
+           --i) {
         localBlockOffset *= iDim[i];
+      }
       auto innerOffset = blockOffsetInner * dimOffset;
       auto inSize = input->size();
-      auto inPtr = input->getRawDataPtr<T *>(),
-           outPtr = output->getRawDataPtr<T *>();
+      auto *inPtr = input->getRawDataPtr<T *>();
+      auto *outPtr = output->getRawDataPtr<T *>();
 #pragma omp parallel for
       for (size_t iOffset = 0; iOffset < inSize; ++iOffset) {
-        auto oOffset = iOffset % localBlockOffset + innerOffset +
-                       iOffset / localBlockOffset * blockOffset;
+        auto oOffset = (iOffset % localBlockOffset) + innerOffset +
+                       (iOffset / localBlockOffset * blockOffset);
         outPtr[oOffset] = inPtr[iOffset];
       }
     }

@@ -29,8 +29,9 @@ private:
 
 public:
   ~KernelRegistry() {
-    for (auto &[k, v] : kernels)
+    for (auto &[k, v] : kernels) {
       delete std::get<0>(v);
+    }
   }
   static KernelRegistry &getInstance() {
     static KernelRegistry instance;

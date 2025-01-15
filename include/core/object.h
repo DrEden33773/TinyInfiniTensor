@@ -27,7 +27,7 @@ public:
 
 class Guid : public Uid {
 private:
-  UidBaseType generateGuid() {
+  static UidBaseType generateGuid() {
     static UidBaseType guidCnt = 0;
     return ++guidCnt;
   }
@@ -49,7 +49,7 @@ public:
  */
 class Fuid : public Uid {
 private:
-  UidBaseType generateFuid() {
+  static UidBaseType generateFuid() {
     static UidBaseType fuidCnt = 0;
     return ++fuidCnt;
   }
@@ -74,7 +74,7 @@ protected:
 public:
   virtual ~Object() {};
   [[nodiscard]] virtual string toString() const = 0;
-  void print() { std::cout << toString() << '\n'; }
+  void print() const { std::cout << toString() << '\n'; }
   [[nodiscard]] UidBaseType getGuid() const { return guid; }
 };
 
