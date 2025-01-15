@@ -1,5 +1,4 @@
 #pragma once
-#include "utils/exception.h"
 #include <cassert>
 #include <list>
 #include <map>
@@ -10,6 +9,8 @@
 #include <tuple>
 #include <unordered_map>
 #include <vector>
+
+#include "utils/exception.h"
 
 namespace infini {
 using std::list;

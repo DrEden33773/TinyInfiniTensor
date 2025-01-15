@@ -1,6 +1,7 @@
 #pragma once
-#include "core/common.h"
 #include <cstdint>
+
+#include "core/common.h"
 
 namespace infini {
 
