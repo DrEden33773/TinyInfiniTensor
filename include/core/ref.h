@@ -18,7 +18,7 @@ template <typename T, typename... Params> Ref<T> make_ref(Params &&...params) {
 }
 
 template <class T, class U,
-          typename std::enable_if_t<std::is_base_of_v<U, T>> * = nullptr>
+          std::enable_if_t<std::is_base_of_v<U, T>> * = nullptr>
 Ref<T> as(const Ref<U> &ref) {
   return std::dynamic_pointer_cast<T>(ref);
 }

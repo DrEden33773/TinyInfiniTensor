@@ -8,7 +8,7 @@ inline Shape idx2Pos(const Shape &shape, size_t idx) {
   auto rest = idx;
   auto curDimId = shape.size() - 1;
   while (rest > 0) {
-    pos[curDimId] = (int)rest % shape[curDimId];
+    pos[curDimId] = static_cast<int>(rest) % shape[curDimId];
     rest /= shape[curDimId];
     curDimId--;
   }
@@ -43,8 +43,7 @@ class NaiveTranspose : public CpuKernelWithoutConfig {
   case N:                                                                      \
     doCompute<DT<N>::t>(_op, context)
 
-    int dataTypeIdx = _op->getDType().getIndex();
-    switch (dataTypeIdx) {
+    switch (_op->getDType().getIndex()) {
       CASE(1); // DataType::Float32
       break;
       CASE(12); // DataType::UInt32

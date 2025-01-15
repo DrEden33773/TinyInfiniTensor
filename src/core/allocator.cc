@@ -99,7 +99,7 @@ void Allocator::free(size_t addr, size_t size) {
 #ifdef MERGE_ADJ_LEFT_FREE_BLOCK
   auto left_it = available.lower_bound(addr); // the first <=, instead of <
   if (left_it != available.begin()) {
-    auto prev_it = std::prev(left_it); // that's why we need the `orev` iterator
+    auto prev_it = std::prev(left_it); // that's why we need the `prev` iterator
     if (prev_it->first + prev_it->second == addr) {
       addr = prev_it->first;
       size += prev_it->second;

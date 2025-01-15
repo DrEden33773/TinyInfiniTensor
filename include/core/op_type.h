@@ -23,8 +23,9 @@ struct OpType {
 
   } type;
 
-  constexpr OpType(decltype(type) t) : type(t) {}
-  constexpr explicit OpType(underlying_t val)
+  constexpr OpType(decltype(type) t) // NOLINT(*-explicit-constructor)
+      : type(t) {}
+  constexpr OpType(underlying_t val) // NOLINT(*-explicit-constructor)
       : type(static_cast<decltype(type)>(val)) {}
   [[nodiscard]] constexpr underlying_t underlying() const { return type; }
 
@@ -32,7 +33,11 @@ struct OpType {
   bool operator!=(OpType others) const { return type != others.type; }
   bool operator<(OpType others) const { return type < others.type; }
 
-  const char *toString() const;
+  bool operator==(decltype(type) others) const { return type == others; }
+  bool operator!=(decltype(type) others) const { return type != others; }
+  bool operator<(decltype(type) others) const { return type < others; }
+
+  [[nodiscard]] const char *toString() const;
 };
 
 } // namespace infini

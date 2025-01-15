@@ -7,10 +7,11 @@
 
 namespace infini {
 
-ConcatObj::ConcatObj(GraphObj *graph, TensorVec inputs, Tensor output, int _dim)
+ConcatObj::ConcatObj(GraphObj *graph, const TensorVec &inputs, Tensor output,
+                     int input_dim)
     : OperatorObj(OpType::Concat, inputs, {std::move(output)}) {
-  int rank = (int)inputs[0]->getRank();
-  dim = get_real_axis(_dim, rank);
+  int rank = static_cast<int>(inputs[0]->getRank());
+  dim = get_real_axis(input_dim, rank);
   IT_ASSERT(checkValid(graph));
 }
 
@@ -32,7 +33,7 @@ optional<vector<Shape>> ConcatObj::inferShape(const TensorVec &inputs) {
   // axis has been checked in the constructor => dim
 
   Shape output_shape = inputs[0]->getDims();
-  int int_rank = (int)rank;
+  int int_rank = static_cast<int>(rank);
 
   for (auto it = inputs.begin() + 1; it != inputs.end(); ++it) {
     auto input_shape = (*it)->getDims();

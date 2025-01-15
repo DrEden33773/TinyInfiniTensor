@@ -22,7 +22,7 @@ Shape infer_broadcast(const Shape &A, const Shape &B) {
     }
 
     // 4. 取两个维度的最大值
-    broadcast_shape[--k] = (int)std::max(a, b);
+    broadcast_shape[--k] = static_cast<int>(std::max(a, b));
   }
 
   return broadcast_shape;
@@ -46,7 +46,7 @@ Shape locate_index(size_t inputN, const Shape &shape) {
   auto j = shape.rbegin();
   auto ej = shape.rend();
   while (j != ej) {
-    auto div = std::div((int)inputN, *j++);
+    auto div = std::div(static_cast<int>(inputN), *j++);
     *i++ = div.rem;
     inputN = div.quot;
   }
@@ -61,7 +61,7 @@ size_t delocate_index(const Shape &shapeIndex, const Shape &shape,
   IT_ASSERT(shape.size() == stride.size());
   for (size_t i = 0; i < shape.size(); ++i) {
     index[i] = shapeIndex[i] % shape[i];
-    ans += (long)index[i] * stride[i];
+    ans += static_cast<long>(index[i]) * stride[i];
   }
   return ans;
 }

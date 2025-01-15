@@ -17,7 +17,7 @@ class NativeUnary : public CpuKernelWithoutConfig {
     auto outDim = op->getOutput()->getDims();
     auto n = op->getOutput()->size();
 
-    T (*_doCompute)(T val){};
+    T (*_doCompute)(T val){nullptr};
     switch (op->getOpType().underlying()) {
     case OpType::Relu:
       _doCompute = reluCompute<T>;
@@ -36,8 +36,7 @@ class NativeUnary : public CpuKernelWithoutConfig {
   case N:                                                                      \
     doCompute<DT<N>::t>(_op, context)
 
-    int dataTypeIdx = _op->getDType().getIndex();
-    switch (dataTypeIdx) {
+    switch (_op->getDType().getIndex()) {
       CASE(1); // DataType::Float32
       break;
       CASE(12); // DataType::UInt32
@@ -76,8 +75,7 @@ class Clip : public CpuKernelWithoutConfig {
   case N:                                                                      \
     doCompute<DT<N>::t>(_op, context)
 
-    int dataTypeIdx = _op->getDType().getIndex();
-    switch (dataTypeIdx) {
+    switch (_op->getDType().getIndex()) {
       CASE(1); // DataType::Float32
       break;
       CASE(12); // DataType::UInt32

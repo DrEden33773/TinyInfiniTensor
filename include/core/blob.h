@@ -16,7 +16,7 @@ public:
   BlobObj(Runtime runtime, void *ptr) : runtime(std::move(runtime)), ptr(ptr) {}
   BlobObj(BlobObj &other) = delete;
   BlobObj &operator=(BlobObj const &) = delete;
-  ~BlobObj() {};
+  ~BlobObj() = default;
 
   template <typename T> T getPtr() const { return static_cast<T>(ptr); }
 };

@@ -17,7 +17,7 @@ class NaiveConcat : public CpuKernelWithoutConfig {
     }
     const auto &outDim = output->getDims();
     size_t blockOffsetInner = 1;
-    for (size_t i = outDim.size() - 1; i > (size_t)dim; --i) {
+    for (size_t i = outDim.size() - 1; i > static_cast<size_t>(dim); --i) {
       blockOffsetInner *= outDim[i];
     }
     size_t blockOffset = outDim[dim] * blockOffsetInner;
@@ -29,9 +29,9 @@ class NaiveConcat : public CpuKernelWithoutConfig {
         dimOffset += iDims[j][dim];
       }
       size_t localBlockOffset = 1;
-      for (size_t i = iDim.size() - 1; i >= (size_t)dim && i != (size_t)-1;
-           --i) {
-        localBlockOffset *= iDim[i];
+      for (size_t k = iDim.size() - 1;
+           k >= static_cast<size_t>(dim) && k != static_cast<size_t>(-1); --k) {
+        localBlockOffset *= iDim[k];
       }
       auto innerOffset = blockOffsetInner * dimOffset;
       auto inSize = input->size();
@@ -51,8 +51,7 @@ class NaiveConcat : public CpuKernelWithoutConfig {
   case N:                                                                      \
     doCompute<DT<N>::t>(_op, context)
 
-    int dataTypeIdx = _op->getDType().getIndex();
-    switch (dataTypeIdx) {
+    switch (_op->getDType().getIndex()) {
       CASE(1); // DataType::Float32
       break;
       CASE(12); // DataType::UInt32

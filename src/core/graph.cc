@@ -189,8 +189,10 @@ void GraphObj::optimize() {
     auto curr_perm = curr_tr_op->getPermute();
     auto is_last_two_dims_swapped =
         curr_perm.size() >= 2 &&
-        curr_perm[curr_perm.size() - 1] == (int)(curr_perm.size() - 2) &&
-        curr_perm[curr_perm.size() - 2] == (int)(curr_perm.size() - 1);
+        curr_perm[curr_perm.size() - 1] ==
+            static_cast<int>(curr_perm.size() - 2) &&
+        curr_perm[curr_perm.size() - 2] ==
+            static_cast<int>(curr_perm.size() - 1);
 
     // 只有满足 `最后两维交换` 的条件, 才能继续
     if (next_op->getOpType() != OpType::MatMul || !is_last_two_dims_swapped) {
@@ -255,7 +257,7 @@ void GraphObj::shape_infer() {
     auto oldOutputs = op->getOutputs();
     IT_ASSERT(ans.value().size() == oldOutputs.size());
     // replace the old output-shape and size with new one
-    for (int i = 0; i < (int)ans.value().size(); ++i) {
+    for (int i = 0; i < static_cast<int>(ans.value().size()); ++i) {
       auto newShape = ans.value()[i];
       auto oldShape = oldOutputs[i]->getDims();
       auto fuid = oldOutputs[i]->getFuid();
@@ -287,7 +289,7 @@ void GraphObj::dataMalloc() {
   allocator.info();
 }
 
-Tensor GraphObj::addTensor(Shape dim, DataType dtype) {
+Tensor GraphObj::addTensor(const Shape &dim, DataType dtype) {
   return tensors.emplace_back(make_ref<TensorObj>(dim, dtype, runtime));
 }
 
@@ -313,8 +315,7 @@ TensorVec GraphObj::addTensor(const TensorVec &tensors) {
 // "predecessors" and "successors" of an operator of "ops" must be in "ops".
 bool GraphObj::checkValid() const {
   for (const auto &tensor : tensors) {
-    IT_ASSERT(tensor->getTargets().size() != 0 ||
-              nullptr != tensor->getSource());
+    IT_ASSERT(!tensor->getTargets().empty() || nullptr != tensor->getSource());
     for (const auto &op : tensor->getTargets()) {
       IT_ASSERT(std::find(ops.begin(), ops.end(), op) != ops.end());
     }

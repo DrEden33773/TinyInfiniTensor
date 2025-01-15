@@ -20,7 +20,7 @@ public:
   [[nodiscard]] string toString() const override;
   [[nodiscard]] Runtime getRuntime() const { return runtime; }
 
-  Tensor addTensor(Shape dim, DataType dtype = DataType::Float32);
+  Tensor addTensor(const Shape& dim, DataType dtype = DataType::Float32);
   Tensor addTensor(const Tensor &tensor);
   TensorVec addTensor(const TensorVec &tensors);
   void removeOperator(const Operator &op) {
@@ -44,7 +44,7 @@ public:
   /**
    * @brief Sort the nodes in topological order.
    * It returns true if the sorting is successful.
-   * Otherwise false is returned, means that there are rings in the graph,
+   * Otherwise, false is returned, means that there are rings in the graph,
    * so the topological sorting fails.
    */
   bool topo_sort();

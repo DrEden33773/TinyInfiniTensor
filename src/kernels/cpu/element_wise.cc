@@ -18,7 +18,7 @@ class NativeElementWise : public CpuKernelWithoutConfig {
   }
 
   template <typename T> static T divCompute(T val0, T val1) {
-    return (T)(val0 / val1);
+    return static_cast<T>(val0 / val1);
   }
 
   template <typename T>
@@ -35,9 +35,9 @@ class NativeElementWise : public CpuKernelWithoutConfig {
     Shape a(rank, 1);
     Shape b(rank, 1);
     std::copy(shapeA.begin(), shapeA.end(),
-              a.begin() + (long)(rank - shapeA.size()));
+              a.begin() + static_cast<long>(rank - shapeA.size()));
     std::copy(shapeB.begin(), shapeB.end(),
-              b.begin() + (long)(rank - shapeB.size()));
+              b.begin() + static_cast<long>(rank - shapeB.size()));
     auto getStride = [&](const Shape &shape) {
       int p = 1;
       Shape stride(rank);
@@ -51,7 +51,7 @@ class NativeElementWise : public CpuKernelWithoutConfig {
     Shape strideB = getStride(b);
 
     auto n = op->getOutput()->size();
-    T (*_doCompute)(T val0, T val1){};
+    T (*_doCompute)(T val0, T val1){nullptr};
     switch (op->getOpType().underlying()) {
     case OpType::Add:
       _doCompute = addCompute<T>;
@@ -82,8 +82,7 @@ class NativeElementWise : public CpuKernelWithoutConfig {
   case N:                                                                      \
     doCompute<DT<N>::t>(_op, context)
 
-    int dataTypeIdx = _op->getDType().getIndex();
-    switch (dataTypeIdx) {
+    switch (_op->getDType().getIndex()) {
       CASE(1); // DataType::Float32
       break;
       CASE(12); // DataType::UInt32

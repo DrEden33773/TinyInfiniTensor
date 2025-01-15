@@ -33,7 +33,7 @@ public:
   RuntimeObj(RuntimeObj &&other) = default;
   RuntimeObj &operator=(RuntimeObj &&) = default;
 
-  virtual ~RuntimeObj() {}
+  virtual ~RuntimeObj() = default;
 
   virtual void run(const Graph &graph) const = 0;
   virtual void *alloc(size_t size) = 0;

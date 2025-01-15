@@ -9,8 +9,8 @@
 namespace infini {
 
 TensorObj::TensorObj(Shape shape_, DataType dtype, Runtime runtime)
-    : dim((int)shape_.size()), dtype(dtype), runtime(std::move(runtime)),
-      shape(std::move(shape_)),
+    : dim(static_cast<int>(shape_.size())), dtype(dtype),
+      runtime(std::move(runtime)), shape(std::move(shape_)),
       _size(std::accumulate(shape.begin(), shape.end(), 1, std::multiplies{})) {
 }
 

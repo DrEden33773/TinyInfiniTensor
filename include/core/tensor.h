@@ -32,7 +32,7 @@ private:
 
 public:
   TensorObj(Shape shape, DataType dtype, Runtime runtime);
-  virtual ~TensorObj() {}
+  ~TensorObj() override = default;
   [[nodiscard]] string toString() const override;
 
   [[nodiscard]] size_t size() const { return _size; }

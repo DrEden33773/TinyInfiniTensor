@@ -39,7 +39,7 @@ private:
   std::map<size_t, size_t> available{{0, MAX_SIZE}};
 
 public:
-  Allocator(Runtime runtime);
+  explicit Allocator(Runtime runtime);
 
   virtual ~Allocator();
 

@@ -12,7 +12,7 @@ TransposeObj::TransposeObj(GraphObj *graph, const Tensor &input, Tensor output,
 
   if (permute.empty()) {
     for (size_t i = 0; i < rank; ++i) {
-      transposePermute[i] = (int)i;
+      transposePermute[i] = static_cast<int>(i);
     }
   } else {
     IT_ASSERT(rank == permute.size());
